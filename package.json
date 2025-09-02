@@ -1,0 +1,24 @@
+{
+  "name": "ticketsystem",
+  "version": "1.0.0",
+  "description": "CPSC 3720 Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nimnay/TicketSystem.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nimnay/TicketSystem/issues"
+  },
+  "homepage": "https://github.com/nimnay/TicketSystem#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
