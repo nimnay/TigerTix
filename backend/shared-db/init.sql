@@ -1,0 +1,1 @@
+-- SQL Script with table creation statements for shared database
