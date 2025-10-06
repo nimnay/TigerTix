@@ -59,3 +59,4 @@ function purchaseTicket(eventId, callback) {
 }
 
 module.exports = { getAllEvents, purchaseTicket };
+
