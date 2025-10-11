@@ -41,22 +41,21 @@ function getAllEvents(callback) {
  *                 and logs error if one occurs
 */
 function purchaseTicket(eventId, callback) {
-    db.get("SELECT tickets FROM events WHERE id=?", [eventId], (err, row) => {
-        if (err) return callback(err);
-        if (!row) return callback(new Error('Event not found'));
-        if (row.tickets <= 0) return callback(new Error('No tickets available'));
-
-    db.run("BEGIN TRANSACTION");
-    db.run("UPDATE events SET tickets = tickets - 1 WHERE id = ?", [eventId], function (err) {
-        if (err) {
-            db.run("ROLLBACK");
-            return callback(err);
+    db.run(
+        `UPDATE events
+         SET tickets = tickets - 1
+         WHERE id = ? AND tickets > 0`,
+        [eventId],
+        function (err) {
+            if (err) return callback(err);
+            if (this.changes === 0) {
+                return callback(new Error('No tickets available or event not found'));
+            }
+            callback(null, { success: true, message: 'Ticket purchased successfully' });
         }
-        db.run("COMMIT");
-        callback(null, { success: true, message: 'Ticket purchased successfully' });
-    });
-    });
+    );
 }
+
 
 module.exports = { getAllEvents, purchaseTicket };
 
