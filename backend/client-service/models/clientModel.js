@@ -43,8 +43,8 @@ function getAllEvents(callback) {
 function purchaseTicket(eventId, callback) {
     db.run(
         `UPDATE events
-         SET tickets = tickets - 1
-         WHERE id = ? AND tickets > 0`,
+         SET number_of_tickets = number_of_tickets - 1
+         WHERE id = ? AND number_of_tickets > 0`,
         [eventId],
         function (err) {
             if (err) return callback(err);
