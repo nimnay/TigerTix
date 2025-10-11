@@ -4,14 +4,22 @@ import './App.css';
 function App() {
   const [events, setEvents] = useState([]);
   const [message, setMessage] = useState("");
-  useEffect(() => {
+  
+  
+  //function that shows events
+  const fetchEvents = () => {
     fetch('http://localhost:6001/api/events')
-    .then((res) => res.json())
-    .then((data) => setEvents(data))
-    .catch((err) => console.error(err));
-}, []);
+      .then((res) => res.json())
+      .then((data) => setEvents(data))
+      .catch((err) => console.error(err));
+  }
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
 const buyTicket = (eventId) => {
-  fetch(`http://localhost:6001/api/purchase/${eventId}`, {
+  fetch(`http://localhost:6001/api/events/${eventId}/purchase`, {
     method: "POST",
   })
     .then((res) => {
@@ -21,13 +29,19 @@ const buyTicket = (eventId) => {
     .then((data) => {
       setMessage("Ticket purchased successfully!");
 
-      // Option 1: Re-fetch all events (simple)
-      return fetch("http://localhost:6001/api/events")
-        .then((res) => res.json())
-        .then((updated) => setEvents(updated));
-    })
+        // Dynamically decrease tickets without re-fetching
+        setEvents(prevEvents =>
+          prevEvents.map(event =>
+            event.id === eventId
+              ? { ...event, number_of_tickets: event.number_of_tickets - 1 }
+              : event
+          )
+        );
+        console.log(events);
+      })
     .catch((err) => setMessage("Purchase failed, try again."));
 };
+
 
 return (
   <div className="App">
@@ -35,11 +49,14 @@ return (
     <ul>
       {events.map((event) => (
         <li key={event.id}>
-          {event.name} - {event.date}{' '}
-          <button onClick={() => buyTicket(event.name)}>Buy Ticket</button>
+          {event.name} - {event.date}- Tickets Available: {event.number_of_tickets}{' '}
+          <button onClick={() => buyTicket(event.id)}disabled={event.number_of_tickets === 0}>Buy Ticket</button>
         </li>
       ))}
     </ul>
+
+    {message && <p>{message}</p>}
+
   </div>
   );
 }
