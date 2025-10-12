@@ -12,6 +12,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
+
 exports.createEvent = (event, callback) =>
 {
     const { name, date, number_of_tickets, location, description } = event;
