@@ -29,17 +29,22 @@ const buyTicket = (eventId) => {
     .then((data) => {
       setMessage("Ticket purchased successfully!");
 
-        // Dynamically decrease tickets without re-fetching
-        setEvents(prevEvents =>
-          prevEvents.map(event =>
-            event.id === eventId
-              ? { ...event, number_of_tickets: event.number_of_tickets - 1 }
-              : event
-          )
-        );
-        console.log(events);
-      })
-    .catch((err) => setMessage("Purchase failed, try again."));
+      // Dynamically decrease tickets without re-fetching
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.id === eventId
+            ? { ...event, number_of_tickets: event.number_of_tickets - 1 }
+            : event
+        )
+      );
+
+      // 🕒 Auto-clear message after short delay (accessibility-safe)
+      setTimeout(() => setMessage(""), 4000);
+    })
+    .catch((err) => {
+      setMessage("Purchase failed, try again.");
+      setTimeout(() => setMessage(""), 4000);
+    });
 };
 
 
@@ -60,9 +65,9 @@ return (
      </ul>
     </section>
 
-    <div role="status" aria-live="assertive">
-      {message && <p>{message}</p>}
-    </div>
+   <div role="status" aria-live="assertive" aria-atomic="true">
+  {message || ''}
+  </div>
   </div>
   );
 }
