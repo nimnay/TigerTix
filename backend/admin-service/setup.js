@@ -39,6 +39,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
  */
 db.exec(initSql, (err) => {
   if (err) console.error('Error initializing DB:', err.message);
-  else console.log('✅ Shared database initialized successfully!');
+  else console.log(' Shared database initialized successfully!');
   db.close();
 });
