@@ -19,7 +19,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 /**
- * Inserts a new event into the events table.
+ * Creates a new event in the events table.
  * @param {Object} event - The event object containing event details.
  * Properties: name, date, number_of_tickets, location, description
  * @param {Function} callback - Callback function to handle the result or error.
@@ -31,11 +31,29 @@ exports.createEvent = (event, callback) => {
     const sql = `INSERT INTO events (name, date, number_of_tickets, location, description)
                VALUES (?, ?, ?, ?, ?)`;
 
-    db.run(sql, [name, date, number_of_tickets, location, description], function (err) {
-        if (err) {
-            console.error('Error creating event:', err);
-            return callback(err);
-        }
-        callback(null, { id: this.lastID, ...event });
+    // Use a transaction to ensure data integrity
+    db.serialize(() => {
+        db.run("BEGIN TRANSACTION");
+
+        const sql = `INSERT INTO events (name, date, number_of_tickets, location, description)
+            VALUES (?, ?, ?, ?, ?)`;
+
+        // Execute the insert statement
+        db.run(sql, [name, date, number_of_tickets, location, description], function (err) {
+            if (err) {
+                console.error("Error creating event:", err);
+                db.run("ROLLBACK");
+                return callback(err);
+            }
+
+            // Commit the transaction
+            db.run("COMMIT", (commitErr) => {
+                if (commitErr) {
+                    console.error("Commit failed:", commitErr);
+                    return callback(commitErr);
+                }
+                callback(null, { id: this.lastID, ...event });
+            });
+        });
     });
 }

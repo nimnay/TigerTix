@@ -9,7 +9,7 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 
 // Route to create a new event
-// POST /admin/api/events
-router.post('/api/events', adminController.createEvent);
+// POST /api/events
+router.post('/events', adminController.createEvent);
 
 module.exports = router;

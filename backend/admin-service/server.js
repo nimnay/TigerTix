@@ -12,7 +12,7 @@ const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use('/admin', adminRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
