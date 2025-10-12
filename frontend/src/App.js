@@ -45,18 +45,24 @@ const buyTicket = (eventId) => {
 
 return (
   <div className="App">
-   <h1>Clemson Campus Events</h1>
-    <ul>
+   <h1 id = "page title"> Clemson Campus Events</h1>
+    <section aria-labelledby="Event-List">
+      <h2 id = "Event-List"> Upcoming Events </h2>
+
+
+      <ul aria-live = "polite">
       {events.map((event) => (
         <li key={event.id}>
           {event.name} - {event.date}- Tickets Available: {event.number_of_tickets}{' '}
           <button onClick={() => buyTicket(event.id)}disabled={event.number_of_tickets === 0}>Buy Ticket</button>
         </li>
-      ))}
-    </ul>
+       ))}
+     </ul>
+    </section>
 
-    {message && <p>{message}</p>}
-
+    <div role="status" aria-live="assertive">
+      {message && <p>{message}</p>}
+    </div>
   </div>
   );
 }
