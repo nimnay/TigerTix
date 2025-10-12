@@ -4,6 +4,7 @@
   "description": "CPSC 3720 Project",
   "main": "index.js",
   "scripts": {
+    "start": "concurrently \"node admin-service/server.js\" \"node client-service/server.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,5 +22,8 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }
