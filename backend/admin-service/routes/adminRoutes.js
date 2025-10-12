@@ -3,6 +3,6 @@ const router = express.Router();
 const adminController = require('../controllers/adminController');
 
 
-router.post('/events', adminController.createEvent);
+router.post('/api/events', adminController.createEvent);
 
 module.exports = router;
