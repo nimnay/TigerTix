@@ -17,5 +17,5 @@ app.use('/api', routes);
 //Port for client-service
 const PORT = 6001;
 
-app.listen(PORT, () => console.log(`Server running at
+app.listen(PORT, () => console.log(`Client Service running at
 http://localhost:${PORT}`));
