@@ -39,7 +39,7 @@ async function parse(req, res) {
 
     // Intent: View available events
     if (parsed.intent === 'view') {
-      const events = LLMModel.getAvailableEvents();
+      const events = getAvailableEvents();
       
       // Create user-friendly message
       let eventList = events.map(e => 
@@ -59,7 +59,7 @@ async function parse(req, res) {
     // Intent: Book tickets
     if (parsed.intent === 'book') {
       // Find the event by name (with fuzzy matching)
-      const event = LLMModel.findEventByName(parsed.event);
+      const event = findEventByName(parsed.event);
 
       if (!event) {
         return res.json({
@@ -127,7 +127,7 @@ async function confirm(req, res) {
     }
 
     // Execute booking with transaction safety (5 pts per rubric)
-    const result = LLMModel.confirmBooking(eventId, tickets);
+    const result = confirmBooking(eventId, tickets);
 
     res.json({
       success: true,
