@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import Chat from './Chat';
 import './App.css';
 function App() {
   const [events, setEvents] = useState([]);
@@ -51,6 +51,9 @@ const buyTicket = (eventId) => {
 return (
   <div className="App">
    <h1 id = "page title"> Clemson Campus Events</h1>
+   
+   <Chat />
+   
     <section aria-labelledby="Event-List">
       <h2 id = "Event-List"> Upcoming Events </h2>
 

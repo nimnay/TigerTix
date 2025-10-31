@@ -39,60 +39,76 @@ async function parse(req, res) {
 
     // Intent: View available events
     if (parsed.intent === 'view') {
-      const events = getAvailableEvents();
-      
-      // Create user-friendly message
-      let eventList = events.map(e => 
-        `${e.name} on ${e.date} (${e.available_tickets} tickets available)`
-      ).join(', ');
+      getAvailableEvents((err, events) => {
+        if (err) {
+          return res.status(500).json({ 
+            error: 'Failed to fetch events',
+            message: 'Could not retrieve available events'
+          });
+        }
+        
+        // Create user-friendly message
+        let eventList = events.map(e => 
+          `${e.name} on ${e.date} (${e.available_tickets} tickets available)`
+        ).join(', ');
 
-      return res.json({
-        intent: 'view',
-        events: events,
-        message: `Found ${events.length} available event${events.length !== 1 ? 's' : ''}`,
-        response: events.length > 0 
-          ? `I found ${events.length} event${events.length !== 1 ? 's' : ''} with available tickets: ${eventList}`
-          : 'Sorry, there are no events with available tickets at the moment.'
+        return res.json({
+          intent: 'view',
+          events: events,
+          message: `Found ${events.length} available event${events.length !== 1 ? 's' : ''}`,
+          response: events.length > 0 
+            ? `I found ${events.length} event${events.length !== 1 ? 's' : ''} with available tickets: ${eventList}`
+            : 'Sorry, there are no events with available tickets at the moment.'
+        });
       });
+      return; // Exit to prevent response being sent twice
     }
 
     // Intent: Book tickets
     if (parsed.intent === 'book') {
       // Find the event by name (with fuzzy matching)
-      const event = findEventByName(parsed.event);
+      findEventByName(parsed.event, (err, event) => {
+        if (err) {
+          return res.status(500).json({ 
+            error: 'Failed to search for event',
+            message: 'An error occurred while searching for the event'
+          });
+        }
 
-      if (!event) {
+        if (!event) {
+          return res.json({
+            error: `Event "${parsed.event}" not found`,
+            suggestion: 'Try asking to see available events first',
+            response: `I couldn't find an event called "${parsed.event}". Would you like to see all available events?`
+          });
+        }
+
+        // Check ticket availability
+        if (event.available_tickets < parsed.tickets) {
+          return res.json({
+            error: `Only ${event.available_tickets} ticket${event.available_tickets !== 1 ? 's' : ''} available for ${event.name}`,
+            event: event,
+            response: `Sorry, only ${event.available_tickets} ticket${event.available_tickets !== 1 ? 's are' : ' is'} available for ${event.name}. Would you like to book ${event.available_tickets} instead?`
+          });
+        }
+
+        // Prepare booking (don't execute yet - requires confirmation per rubric)
         return res.json({
-          error: `Event "${parsed.event}" not found`,
-          suggestion: 'Try asking to see available events first',
-          response: `I couldn't find an event called "${parsed.event}". Would you like to see all available events?`
+          intent: 'book',
+          needsConfirmation: true,
+          booking: {
+            eventId: event.id,
+            eventName: event.name,
+            eventDate: event.date,
+            eventLocation: event.location,
+            tickets: parsed.tickets,
+            availableTickets: event.available_tickets
+          },
+          message: `Ready to book ${parsed.tickets} ticket${parsed.tickets !== 1 ? 's' : ''} for ${event.name}. Please confirm.`,
+          response: `I'm ready to book ${parsed.tickets} ticket${parsed.tickets !== 1 ? 's' : ''} for ${event.name} on ${event.date} at ${event.location}. Please confirm your booking.`
         });
-      }
-
-      // Check ticket availability
-      if (event.available_tickets < parsed.tickets) {
-        return res.json({
-          error: `Only ${event.available_tickets} ticket${event.available_tickets !== 1 ? 's' : ''} available for ${event.name}`,
-          event: event,
-          response: `Sorry, only ${event.available_tickets} ticket${event.available_tickets !== 1 ? 's are' : ' is'} available for ${event.name}. Would you like to book ${event.available_tickets} instead?`
-        });
-      }
-
-      // Prepare booking (don't execute yet - requires confirmation per rubric)
-      return res.json({
-        intent: 'book',
-        needsConfirmation: true,
-        booking: {
-          eventId: event.id,
-          eventName: event.name,
-          eventDate: event.date,
-          eventLocation: event.location,
-          tickets: parsed.tickets,
-          availableTickets: event.available_tickets
-        },
-        message: `Ready to book ${parsed.tickets} ticket${parsed.tickets !== 1 ? 's' : ''} for ${event.name}. Please confirm.`,
-        response: `I'm ready to book ${parsed.tickets} ticket${parsed.tickets !== 1 ? 's' : ''} for ${event.name} on ${event.date} at ${event.location}. Please confirm your booking.`
       });
+      return; // Exit to prevent response being sent twice
     }
 
     // Unknown intent
@@ -127,13 +143,22 @@ async function confirm(req, res) {
     }
 
     // Execute booking with transaction safety (5 pts per rubric)
-    const result = confirmBooking(eventId, tickets);
+    confirmBooking(eventId, tickets, (err, result) => {
+      if (err) {
+        console.error('Confirmation error:', err);
+        return res.status(400).json({
+          success: false,
+          error: err.message,
+          message: 'Booking confirmation failed: ' + err.message
+        });
+      }
 
-    res.json({
-      success: true,
-      ...result,
-      message: `Successfully booked ${result.ticketsPurchased} ticket${result.ticketsPurchased !== 1 ? 's' : ''} for ${result.eventName}`,
-      response: `Your booking is confirmed! You have successfully booked ${result.ticketsPurchased} ticket${result.ticketsPurchased !== 1 ? 's' : ''} for ${result.eventName}. ${result.remainingTickets} ticket${result.remainingTickets !== 1 ? 's' : ''} remaining.`
+      res.json({
+        success: true,
+        ...result,
+        message: `Successfully booked ${result.ticketsPurchased} ticket${result.ticketsPurchased !== 1 ? 's' : ''} for ${result.eventName}`,
+        response: `Your booking is confirmed! You have successfully booked ${result.ticketsPurchased} ticket${result.ticketsPurchased !== 1 ? 's' : ''} for ${result.eventName}. ${result.remainingTickets} ticket${result.remainingTickets !== 1 ? 's' : ''} remaining.`
+      });
     });
   } catch (error) {
     console.error('Confirmation error:', error);

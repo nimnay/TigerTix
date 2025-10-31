@@ -1,0 +1,56 @@
+.chat-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.chat-input {
+  width: 100%;
+  padding: 15px 60px 15px 15px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.mic-button {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.mic-button:hover {
+  transform: scale(1.1);
+}
+
+.mic-button:active {
+  transform: scale(0.95);
+}
+
+.mic-icon {
+  width: 24px;
+  height: 24px;
+  color: #666;
+}
+
+.mic-button:hover .mic-icon {
+  color: #4CAF50;
+}
