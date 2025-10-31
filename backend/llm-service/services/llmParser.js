@@ -32,6 +32,26 @@ async function parseBookingRequest(text) {
     let content = response.text().trim(); 
 
     //Remove markdown code blocks if present
-    content = content.replace()
+    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    //Parse the JSOn
+    const parsed = JSON.parse(content); 
+
+    // Validate correct response recieved
+    if (parsed.intent) {
+        return parsed;
+    } else if (parsed.error) {
+        return parsed; 
+    } else {
+        throw new Error('Invalid response structure from Gemini');
+    } 
+
+} catch (error) {
+    console.error('Gemini parsing error: ', error.message);
+
+    //Fall back to keyword based parser 
+    console.log('Falling back to keyword parser');
+    return fallbackParser(text);
+}
 
 }

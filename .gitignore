@@ -16,4 +16,5 @@ yarn-error.log*
 dist/
 build/
 
+# Ignore env 
 .env
