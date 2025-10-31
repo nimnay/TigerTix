@@ -1,7 +1,7 @@
 {
   "name": "llm-service",
   "version": "1.0.0",
-  "description": "LLM-driven ticket booking service",
+  "description": "LLM-driven ticket booking service using Gemini AI",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -13,8 +13,8 @@
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "better-sqlite3": "^9.2.2",
-    "openai": "^4.20.1",
-    "axios": "^1.6.2"
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",

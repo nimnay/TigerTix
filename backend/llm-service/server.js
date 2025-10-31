@@ -1,5 +1,7 @@
-// NOTE COME BACK TO ADD DOCUMENTATION
+// Our server for llm-service, ensures env is configured 
 
+
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const llmRoutes = require('./routes/llmRoutes');

@@ -24,4 +24,4 @@ async function parseBookingRequest(text) {
 
 // Include the same fallbackParser function here
 
-// COME BACK TO LOOK OVER, decided to do local llama3 thru ollama 
+// COME BACK TO LOOK OVER, decided to do local llama3 thru ollama
