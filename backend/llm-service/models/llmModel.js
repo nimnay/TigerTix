@@ -113,14 +113,8 @@ function findEventByName(eventName, callback) {
  * @returns {void}
  */
 function confirmBooking(eventId, ticketCount, callback) {
-  db.serialize(() => {
-    db.run('BEGIN TRANSACTION', (err) => {
-      if (err) {
-        console.error('Transaction start error:', err);
-        return callback(err);
-      }
 
-      // Check event exists and get current availability
+// Check event exists and get current availability
       const checkQuery = `
         SELECT 
           id, 
@@ -131,68 +125,54 @@ function confirmBooking(eventId, ticketCount, callback) {
         FROM events
         WHERE id = ?
       `;
+      
 
       db.get(checkQuery, [eventId], (err, event) => {
         if (err) {
-          db.run('ROLLBACK');
           console.error('Event lookup error:', err);
           return callback(err);
         }
 
         if (!event) {
-          db.run('ROLLBACK');
           return callback(new Error('Event not found'));
         }
 
         // Validate sufficient tickets available
         if (event.available_tickets < ticketCount) {
-          db.run('ROLLBACK');
           return callback(new Error(`Only ${event.available_tickets} tickets available for ${event.name}`));
         }
 
-        // Update tickets_sold (atomic operation)
+            // Atomic update with availability check in WHERE clause
+    // This prevents race conditions without explicit transactions
         const updateQuery = `
           UPDATE events
           SET tickets_sold = tickets_sold + ?
           WHERE id = ? 
-            AND (number_of_tickets - tickets_sold) >= ?
+          AND (number_of_tickets - tickets_sold) >= ?
         `;
 
         db.run(updateQuery, [ticketCount, eventId, ticketCount], function(err) {
           if (err) {
-            db.run('ROLLBACK');
             console.error('Update error:', err);
             return callback(err);
           }
 
           // Verify update succeeded
           if (this.changes === 0) {
-            db.run('ROLLBACK');
             return callback(new Error('Booking failed - tickets may have been sold by another user'));
           }
 
-          // Commit transaction
-          db.run('COMMIT', (err) => {
-            if (err) {
-              db.run('ROLLBACK');
-              console.error('Commit error:', err);
-              return callback(err);
-            }
+          // Calculate remaining tickets after this booking
+          const remainingTickets = event.available_tickets - ticketCount;
 
-            // Calculate remaining tickets after this booking
-            const remainingTickets = event.available_tickets - ticketCount;
-
-            callback(null, {
-              success: true,
-              eventName: event.name,
-              ticketsPurchased: ticketCount,
-              remainingTickets: remainingTickets
-            });
-          });
+          callback(null, {
+            success: true,
+            eventName: event.name,
+            ticketsPurchased: ticketCount,
+            remainingTickets: remainingTickets
         });
       });
     });
-  });
 }
 
 /**
@@ -230,5 +210,7 @@ module.exports = {
   getAvailableEvents, 
   findEventByName, 
   confirmBooking, 
-  getEventById 
+  getEventById,
+  db // export for testing clean up if needed 
+  
 };
