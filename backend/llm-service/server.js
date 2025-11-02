@@ -27,8 +27,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`LLM Service running on port ${PORT}`);
-});
+
+
+// Only start server if not in test mode
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`LLM Service running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
