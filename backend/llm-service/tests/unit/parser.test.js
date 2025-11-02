@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { parseBookingRequest, fallbackParser } = require('../../services/llmParser');
 
 describe('LLM Parser Unit Tests', () => {

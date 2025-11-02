@@ -1,3 +1,5 @@
+
+
 /**
  * Validate ticket count is a positive integer
  * @param {*} tickets - Ticket count to validate
@@ -26,9 +28,7 @@ function sanitizeInput(text) {
   
   // Remove potentially dangerous characters and patterns
   return text
-    .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove script tags
-    .replace(/[<>]/g, '') // Remove angle brackets
-    .replace(/['";]/g, '') // Remove quotes and semicolons
+    .replace(/<[^>]*>/g, '') // This removes everything between < and >
     .trim();
 }
 
