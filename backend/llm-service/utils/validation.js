@@ -1,4 +1,15 @@
-
+/**
+ * Validation Utilities for LLM-Service
+ * 
+ * Provides input validation (before processing) and sanitization functions (prevent XSS attacks)
+ * used throughout the LLM microservice to ensure data types 
+ * are correct before database operations
+ * 
+ * Used by:
+ * - controllers/llmController.js - Validates request data before processing
+ * - services/llmParser.js - Sanitizes user text input before parsing 
+ * - any component that needs to validate ticket counts or event IDs
+ */
 
 /**
  * Validate ticket count is a positive integer
@@ -20,6 +31,7 @@ function validateEventId(eventId) {
 
 /**
  * Sanitize user input to prevent injection attacks
+ * Removes HTML tags and potentially dangerous characters from user text
  * @param {string} text - Text to sanitize
  * @returns {string} Sanitized text
  */
