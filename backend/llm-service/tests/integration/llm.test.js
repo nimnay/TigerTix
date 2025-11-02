@@ -11,7 +11,7 @@ afterAll(() => {
 
 
 const request = require('supertest');
-const app = require('../server');
+const app = require('../../server');
 
 describe('LLM Service Tests', () => {
   describe('POST /api/llm/parse', () => {
