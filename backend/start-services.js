@@ -8,7 +8,8 @@ const { spawn } = require('child_process');
 
 const services = [
   { name: 'Admin Service', path: './admin-service/server.js' },
-  { name: 'Client Service', path: './client-service/server.js' }
+  { name: 'Client Service', path: './client-service/server.js' },
+  { name: 'LLM Service', path: './llm-service/server.js' }
 ];
 
 services.forEach(service => {
