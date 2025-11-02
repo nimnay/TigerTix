@@ -22,7 +22,9 @@ describe('LLM Parser Unit Tests', () => {
 
     test('should handle invalid input gracefully', async () => {
       const result = await parseBookingRequest('');
-      expect(result.error).toBeDefined();
+      // Empty input falls back to chat intent
+      expect(result.intent).toBe('chat');
+      expect(result.response).toBeDefined();
     });
   });
 
@@ -52,7 +54,10 @@ describe('LLM Parser Unit Tests', () => {
 
     test('should handle unclear input', () => {
       const result = fallbackParser('random gibberish xyz123');
-      expect(result.error).toBeDefined();
+      // Unclear input falls back to chat intent with helpful message
+      expect(result.intent).toBe('chat');
+      expect(result.response).toBeDefined();
+      expect(result.response).toContain('TigerTix');
     });
 
     test('should extract event name from "for" pattern', () => {
