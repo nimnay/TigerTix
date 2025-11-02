@@ -3,12 +3,13 @@ import "./Chat.css";
 
 function Chat() {
   const [inputText, setInputText] = useState("");
+  const [messages, setMessages] = useState([]);
   const [listening, setListening] = useState(false);
-  const [supported, setSupported] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(null);
 
   // --- Voice Recognition Setup ---
   const playBeep = useCallback(() => {
-    // Create a beep sound using Web Audio API
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
@@ -16,7 +17,7 @@ function Chat() {
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
     
-    oscillator.frequency.value = 800; // Frequency in Hz
+    oscillator.frequency.value = 800;
     oscillator.type = 'sine';
     
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
@@ -30,7 +31,6 @@ function Chat() {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setSupported(false);
       alert("Speech recognition not supported in this browser.");
       return;
     }
@@ -40,9 +40,7 @@ function Chat() {
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
-    // Play beep sound
     playBeep();
-
     setListening(true);
     recognition.start();
 
@@ -62,12 +60,12 @@ function Chat() {
     recognition.onend = () => {
       setListening(false);
     };
-  }, []);
+  }, [playBeep]);
 
   // --- Text-to-Speech Function ---
   const speak = useCallback((text) => {
     if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel(); // stop any ongoing speech
+    window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1.0;
@@ -76,37 +74,159 @@ function Chat() {
     window.speechSynthesis.speak(utterance);
   }, []);
 
-  // --- Handle Form Submit ---
-  const handleSubmit = (e) => {
+  // --- Send message to LLM ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User input:", inputText);
+    if (!inputText.trim()) return;
 
-    // Example: text-to-speech for simulated LLM response
-    const mockLLMResponse = "Got it! Your ticket request has been received.";
-    speak(mockLLMResponse);
-
+    // Add user message to chat
+    const userMessage = { role: "user", text: inputText };
+    setMessages(prev => [...prev, userMessage]);
     setInputText("");
+    setLoading(true);
+
+    try {
+      // Send to LLM service
+      const response = await fetch('http://localhost:7001/api/llm/parse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: inputText })
+      });
+
+      const data = await response.json();
+
+      // Add assistant response to chat
+      const assistantMessage = {
+        role: "assistant",
+        text: data.response || data.message || "I received your request."
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+
+      // Speak the response
+      speak(assistantMessage.text);
+
+      // If there's a booking proposal, store it
+      if (data.booking) {
+        setPendingBooking(data.booking);
+      }
+
+    } catch (error) {
+      console.error('Error:', error);
+      const errorMessage = {
+        role: "assistant",
+        text: "Sorry, I'm having trouble connecting to the service."
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // --- Confirm booking ---
+  const handleConfirmBooking = async () => {
+    if (!pendingBooking) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:7001/api/llm/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventId: pendingBooking.eventId,
+          tickets: pendingBooking.tickets
+        })
+      });
+
+      const data = await response.json();
+      
+      const confirmMessage = {
+        role: "assistant",
+        text: data.response || "Booking confirmed!"
+      };
+      setMessages(prev => [...prev, confirmMessage]);
+      speak(confirmMessage.text);
+      
+      setPendingBooking(null);
+    } catch (error) {
+      console.error('Booking error:', error);
+      const errorMessage = {
+        role: "assistant",
+        text: "Booking failed. Please try again."
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="chat-container">
-      <form onSubmit={handleSubmit}>
+      <div className="chat-messages">
+        {messages.length === 0 && (
+          <div className="welcome-message">
+            <p>Welcome to TigerTix!</p>
+            <p>Ask me to show events or book tickets.</p>
+          </div>
+        )}
+        
+        {messages.map((msg, index) => (
+          <div key={index} className={`message ${msg.role}`}>
+            <div className="message-content">
+              {msg.text}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div className="message assistant">
+            <div className="message-content typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {pendingBooking && (
+        <div className="booking-confirmation">
+          <p>
+            Ready to book {pendingBooking.tickets} ticket(s) for {pendingBooking.eventName}
+          </p>
+          <button onClick={handleConfirmBooking} className="confirm-btn">
+            Confirm Booking
+          </button>
+          <button onClick={() => setPendingBooking(null)} className="cancel-btn">
+            Cancel
+          </button>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="chat-input-form">
         <div className="input-wrapper">
           <input
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder="Type or speak your message..."
+            placeholder={listening ? "Listening..." : "Type or speak your message..."}
             className="chat-input"
             aria-label="Chat input"
+            disabled={loading}
           />
           <button
             type="button"
             onClick={startListening}
             className={`mic-button ${listening ? "listening" : ""}`}
             aria-label="Voice input"
+            disabled={loading}
           >
             <img src="/mic.svg" alt="Microphone" className="mic-icon" />
+          </button>
+          <button 
+            type="submit" 
+            className="send-button"
+            disabled={loading || !inputText.trim()}
+            aria-label="Send message"
+          >
+            Send
           </button>
         </div>
       </form>

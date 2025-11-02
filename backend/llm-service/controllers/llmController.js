@@ -28,12 +28,21 @@ async function parse(req, res) {
       return res.json(parsed);
     }
 
+    // Intent: General chat (new conversational intent)
+    if (parsed.intent === 'chat') {
+      return res.json({
+        intent: 'chat',
+        message: parsed.response,
+        response: parsed.response
+      });
+    }
+
     // Intent: Greeting
     if (parsed.intent === 'greeting') {
       return res.json({
         intent: 'greeting',
-        message: 'Hello! I can help you book tickets. You can ask me to show available events or book tickets.',
-        response: 'Hello! I can help you book tickets. You can ask me to show available events or book tickets.'
+        message: parsed.response || 'Hello! I can help you book tickets. You can ask me to show available events or book tickets.',
+        response: parsed.response || 'Hello! I can help you book tickets. You can ask me to show available events or book tickets.'
       });
     }
 
@@ -111,13 +120,18 @@ async function parse(req, res) {
       return; // Exit to prevent response being sent twice
     }
 
-    // Unknown intent
-    return res.json(parsed);
+    // Unknown intent - default response
+    return res.json({
+      intent: parsed.intent || 'unknown',
+      message: parsed.response || parsed.message || "I'm here to help with ticket bookings. Ask me to show events or book tickets!",
+      response: parsed.response || parsed.message || "I'm here to help with ticket bookings. Ask me to show events or book tickets!"
+    });
   } catch (error) {
     console.error('Parse error:', error);
     res.status(500).json({ 
       error: 'Failed to process request',
-      message: 'An internal error occurred while processing your request'
+      message: 'An internal error occurred while processing your request',
+      response: 'Sorry, I encountered an error. Please try again.'
     });
   }
 }

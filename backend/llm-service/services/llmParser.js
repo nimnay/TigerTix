@@ -25,18 +25,37 @@ async function parseBookingRequest(text) {
     try { 
         const model = genAI.getGenerativeModel({model: "gemini-2.5-flash"});
 
-        //Create the prompt...
-        // Create the prompt (optimized for token efficiency)
-    const systemPrompt = `Extract ticket booking info. Return ONLY JSON, no markdown:
-    {"event":"name","tickets":number,"intent":"book"|"view"|"greeting"}
+        //Create the prompt for conversational AI
+        const systemPrompt = `You are TigerTix, a friendly AI assistant for Clemson University ticket booking.
 
-    Rules:
-    - greeting: hi/hello -> {"intent":"greeting"}
-    - view: show/list events -> {"intent":"view"}  
-    - book: extract event name + count (default 1)
-    - unclear -> {"error":"Could not parse"}
+Analyze this message and determine the user's intent. Respond with ONLY valid JSON (no markdown):
 
-    Input: "${text}"`;
+INTENT TYPES:
+
+1. GREETING - User says hi/hello/hey
+Return: {"intent":"greeting", "response":"Hi! I'm TigerTix, your ticket assistant. I can show you available events or help you book tickets. What would you like to do?"}
+
+2. VIEW EVENTS - User wants to see/list/show available events or tickets
+Examples: "what events are available", "show me tickets", "which are available", "list events"
+Return: {"intent":"view"}
+
+3. BOOK TICKETS - User wants to book/buy/reserve tickets
+Examples: "book 2 tickets for Jazz Night", "I want to buy tickets to the concert", "reserve 3 seats"
+Extract event name and ticket count (default 1)
+Return: {"intent":"book", "event":"Event Name", "tickets":2, "response":"I found that event! Let me prepare your booking."}
+
+4. GENERAL CHAT - Everything else (questions, small talk, help requests)
+Return: {"intent":"chat", "response":"[Natural conversational response as TigerTix assistant]"}
+
+RULES:
+- Always include a "response" field EXCEPT for "view" intent
+- Be friendly and helpful
+- Keep responses concise (1-2 sentences)
+- Stay in character as TigerTix
+
+User message: "${text}"
+
+JSON response:`;
 
     //Generate a response
     const result = await model.generateContent(systemPrompt);
@@ -46,10 +65,10 @@ async function parseBookingRequest(text) {
     //Remove markdown code blocks if present
     content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
 
-    //Parse the JSOn
+    //Parse the JSON
     const parsed = JSON.parse(content); 
 
-    // Validate correct response recieved
+    // Validate correct response received
     if (parsed.intent) {
         return parsed;
     } else if (parsed.error) {
@@ -86,12 +105,16 @@ function fallbackParser(text) {
   
   // Greeting detection
   if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/.test(lowerText)) {
-    return { intent: "greeting" };
+    return { 
+      intent: "greeting",
+      response: "Hi! I'm TigerTix, your ticket assistant. I can show you available events or help you book tickets. What would you like to do?"
+    };
   }
   
   // View events detection
-  if (/\b(show|list|view|see|display|what|available|all)\b.*\b(event|concert|show|ticket)/i.test(lowerText) ||
-      /\b(event|concert|show|ticket)s?\b.*\b(available|list|show)/i.test(lowerText)) {
+  if (/\b(show|list|view|see|display|what|available|all|which)\b.*\b(event|concert|show|ticket)/i.test(lowerText) ||
+      /\b(event|concert|show|ticket)s?\b.*\b(available|list|show)/i.test(lowerText) ||
+      /which are available|what.*available/i.test(lowerText)) {
     return { intent: "view" };
   }
   
@@ -141,18 +164,21 @@ function fallbackParser(text) {
       return { 
         event: event.trim(), 
         tickets, 
-        intent: "book" 
+        intent: "book",
+        response: `Got it! Let me find tickets for ${event.trim()}.`
       };
     } else {
       return { 
-        error: "Could not identify event name. Try: 'Book 2 tickets for Jazz Night'" 
+        intent: "chat",
+        response: "I'd love to help you book tickets! Could you tell me which event you're interested in? Try saying something like 'Book 2 tickets for Jazz Night'."
       };
     }
   }
   
-  // Default: could not parse
+  // Default: treat as general chat if no specific intent detected
   return { 
-    error: "Could not parse request. Try: 'Show available events' or 'Book 2 tickets for Jazz Night'" 
+    intent: "chat",
+    response: "I'm TigerTix, your ticket booking assistant! I can help you view available events or book tickets. What would you like to do?"
   };
 }
 
