@@ -16,7 +16,7 @@ export default function TicketingChat() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/llm/parse", {
+      const res = await fetch("http://localhost:6001/api/llm/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
@@ -34,4 +34,89 @@ export default function TicketingChat() {
       setLoading(false);
     }
   }; 
+
+
+// Confirm Booking
+const confirmBooking = async () => {
+    if (!pendingBooking) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:6001/api/llm/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: pendingBooking.eventId,
+          tickets: pendingBooking.tickets,
+        }),
+      });
+
+      const data = await res.json();
+      setMessages((prev) => [...prev, { role: "assistant", text: data.response }]);
+      setPendingBooking(null); // Clear pending
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", text: "Booking confirmation failed." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  //Enter key handler
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !loading) sendMessage();
+  };
+
+  return (
+    <div className="chat-window" aria-label="Ticket booking chat assistant">
+      <div
+        className="chat-messages"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+      >
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`message ${msg.role}`}
+            tabIndex={0}
+            aria-label={`${msg.role === "user" ? "User" : "Assistant"} message: ${
+              msg.text
+            }`}
+          >
+            <strong>{msg.role === "user" ? "You" : "Assistant"}:</strong> {msg.text}
+          </div>
+        ))}
+      </div>
+
+      {pendingBooking && (
+        <div className="confirm-box">
+          <p>
+            Confirm booking for <b>{pendingBooking.eventName}</b> (
+            {pendingBooking.tickets} tickets)?
+          </p>
+          <button onClick={confirmBooking} disabled={loading}>
+            Confirm Booking
+          </button>
+        </div>
+      )}
+
+      <div className="chat-input-area">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type a message..."
+          aria-label="Type your message"
+          disabled={loading}
+        />
+        <button onClick={sendMessage} disabled={loading}>
+          Send
+        </button>
+      </div>
+    </div>
+  );
 }
