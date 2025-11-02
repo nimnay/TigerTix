@@ -1,7 +1,7 @@
 /**
- * Purpose: Start both Admin and Client Microservices concurrently.
+ * Purpose: Start Admin, Client, and LLM Microservices concurrently.
  * This script allows you to run "node start-services.js" from our /backend
- * to start both servers at once
+ * to start three servers at once
  */
 
 const fs = require("fs");
