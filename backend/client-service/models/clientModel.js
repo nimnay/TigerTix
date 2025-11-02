@@ -22,7 +22,20 @@ const db = new sqlite3.Database(dbPath, (err) => {
  * 
  */
 function getAllEvents(callback) {
-    db.all("SELECT * FROM events", [], (err, rows) => {
+    const query = `
+        SELECT
+          id,
+          name,
+          date,
+          location,
+          description,
+          number_of_tickets,
+          tickets_sold,
+          (number_of_tickets - tickets_sold) as available_tickets
+        FROM events
+    `;
+
+    db.all(query, [], (err, rows) => {
         if (err) {
             console.error('Error fetching events', err);
             callback(err);
@@ -41,10 +54,11 @@ function getAllEvents(callback) {
  *                 and logs error if one occurs
 */
 function purchaseTicket(eventId, callback) {
+    // Use tickets_sold counter to avoid conflicting with other services
     db.run(
         `UPDATE events
-         SET number_of_tickets = number_of_tickets - 1
-         WHERE id = ? AND number_of_tickets > 0`,
+         SET tickets_sold = tickets_sold + 1
+         WHERE id = ? AND (number_of_tickets - tickets_sold) > 0`,
         [eventId],
         function (err) {
             if (err) return callback(err);

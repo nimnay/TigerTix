@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Chat.css";
 
-function Chat() {
+function Chat({ onBookingConfirmed }) {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
   const [listening, setListening] = useState(false);
@@ -147,6 +147,13 @@ function Chat() {
       speak(confirmMessage.text);
       
       setPendingBooking(null);
+
+      // Notify parent to refresh events list if provided
+      try {
+        if (typeof onBookingConfirmed === 'function') onBookingConfirmed();
+      } catch (e) {
+        console.warn('onBookingConfirmed callback failed', e);
+      }
     } catch (error) {
       console.error('Booking error:', error);
       const errorMessage = {
