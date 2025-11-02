@@ -1,3 +1,15 @@
+/**
+ * Handles natural language processing for TigerTix
+ * Interface between user input and Gemini model 
+ * 
+ * Responsible for:
+ * 1. Calls the Gemini API with user input 
+ * 2. Processes the model's response into structured data
+ * 3. Falls back to key-word based parsing if Gemini fails (rubric)
+ * 
+ * Used by: llmController.js
+ */
+
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 //Initialize chosen LLM: Gemini 
