@@ -180,8 +180,13 @@ function Chat({ onBookingConfirmed }) {
   };
 
   return (
-    <div className="chat-container">
-      <div className="chat-messages">
+    <div className="chat-container" aria-label="TigerTix voice-enabled chat assistant">
+      <div 
+        className="chat-messages"
+        role="log"
+        aria-live="polite"
+        aria-relevant="additions"
+      >
         {messages.length === 0 && (
           <div className="welcome-message">
             <p>Welcome to TigerTix!</p>
@@ -190,18 +195,28 @@ function Chat({ onBookingConfirmed }) {
         )}
         
         {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.role}`}>
+          <div 
+            key={index} 
+            className={`message ${msg.role}`}
+            tabIndex={0}
+            aria-label={`${msg.role === "user" ? "User" : "Assistant"} message: ${msg.text}`}
+          >
             <div className="message-content">
               {msg.text}
               {msg.events && msg.events.length > 0 && (
-                <div className="events-list">
+                <div className="events-list" role="list" aria-label="Available events">
                   {msg.events.map((event, idx) => (
-                    <div key={idx} className="event-card">
+                    <div 
+                      key={idx} 
+                      className="event-card"
+                      role="listitem"
+                      aria-label={`Event: ${event.name}, ${event.date} at ${event.location}, ${event.available_tickets} tickets available`}
+                    >
                       <div className="event-name">{event.name}</div>
                       <div className="event-details">
-                        <span>{event.date}</span>
-                        <span>{event.location}</span>
-                        <span>{event.available_tickets} tickets available</span>
+                        <span aria-label={`Date: ${event.date}`}>{event.date}</span>
+                        <span aria-label={`Location: ${event.location}`}>{event.location}</span>
+                        <span aria-label={`${event.available_tickets} tickets available`}>{event.available_tickets} tickets available</span>
                       </div>
                     </div>
                   ))}
@@ -221,14 +236,22 @@ function Chat({ onBookingConfirmed }) {
       </div>
 
       {pendingBooking && (
-        <div className="booking-confirmation">
+        <div className="booking-confirmation" role="alert" aria-live="assertive">
           <p>
             Ready to book {pendingBooking.tickets} ticket(s) for {pendingBooking.eventName}
           </p>
-          <button onClick={handleConfirmBooking} className="confirm-btn">
+          <button 
+            onClick={handleConfirmBooking} 
+            className="confirm-btn"
+            aria-label={`Confirm booking ${pendingBooking.tickets} tickets for ${pendingBooking.eventName}`}
+          >
             Confirm Booking
           </button>
-          <button onClick={() => setPendingBooking(null)} className="cancel-btn">
+          <button 
+            onClick={() => setPendingBooking(null)} 
+            className="cancel-btn"
+            aria-label="Cancel booking"
+          >
             Cancel
           </button>
         </div>
