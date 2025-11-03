@@ -52,7 +52,13 @@ const confirmBooking = async () => {
       });
 
       const data = await res.json();
+      
       setMessages((prev) => [...prev, { role: "assistant", text: data.response }]);
+      
+      if (onBookingConfirmed) {
+        onBookingConfirmed(data.eventId, data.ticketsPurchased);
+      }
+
       setPendingBooking(null); // Clear pending
     } catch (err) {
       setMessages((prev) => [
