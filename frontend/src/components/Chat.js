@@ -180,7 +180,8 @@ function Chat({ onBookingConfirmed }) {
   };
 
   return (
-    <div className="chat-container" aria-label="TigerTix voice-enabled chat assistant">
+    <div className="chat-container">
+      {/* Messages Area */}
       <div 
         className="chat-messages"
         role="log"
@@ -189,8 +190,8 @@ function Chat({ onBookingConfirmed }) {
       >
         {messages.length === 0 && (
           <div className="welcome-message">
-            <p>Welcome to TigerTix!</p>
-            <p>Ask me to show events or book tickets.</p>
+            <h2>🎓 TigerTix Assistant</h2>
+            <p>Ask me to show events or book tickets</p>
           </div>
         )}
         
@@ -202,7 +203,7 @@ function Chat({ onBookingConfirmed }) {
             aria-label={`${msg.role === "user" ? "User" : "Assistant"} message: ${msg.text}`}
           >
             <div className="message-content">
-              {msg.text}
+              <p>{msg.text}</p>
               {msg.events && msg.events.length > 0 && (
                 <div className="events-list" role="list" aria-label="Available events">
                   {msg.events.map((event, idx) => (
@@ -235,58 +236,69 @@ function Chat({ onBookingConfirmed }) {
         )}
       </div>
 
+      {/* Booking Confirmation */}
       {pendingBooking && (
         <div className="booking-confirmation" role="alert" aria-live="assertive">
-          <p>
-            Ready to book {pendingBooking.tickets} ticket(s) for {pendingBooking.eventName}
+          <p className="booking-title">Confirm Booking</p>
+          <p className="booking-details">
+            {pendingBooking.tickets} ticket(s) for <strong>{pendingBooking.eventName}</strong>
           </p>
-          <button 
-            onClick={handleConfirmBooking} 
-            className="confirm-btn"
-            aria-label={`Confirm booking ${pendingBooking.tickets} tickets for ${pendingBooking.eventName}`}
-          >
-            Confirm Booking
-          </button>
-          <button 
-            onClick={() => setPendingBooking(null)} 
-            className="cancel-btn"
-            aria-label="Cancel booking"
-          >
-            Cancel
-          </button>
+          <div className="booking-actions">
+            <button 
+              onClick={handleConfirmBooking} 
+              className="confirm-btn"
+              aria-label={`Confirm booking ${pendingBooking.tickets} tickets for ${pendingBooking.eventName}`}
+            >
+              ✓ Confirm
+            </button>
+            <button 
+              onClick={() => setPendingBooking(null)} 
+              className="cancel-btn"
+              aria-label="Cancel booking"
+            >
+              ✗ Cancel
+            </button>
+          </div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="chat-input-form">
-        <div className="input-wrapper">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder={listening ? "Listening..." : "Type or speak your message..."}
-            className="chat-input"
-            aria-label="Chat input"
-            disabled={loading}
-          />
-          <button
-            type="button"
-            onClick={startListening}
-            className={`mic-button ${listening ? "listening" : ""}`}
-            aria-label="Voice input"
-            disabled={loading}
-          >
-            <img src="/mic.svg" alt="Microphone" className="mic-icon" />
-          </button>
-          <button 
-            type="submit" 
-            className="send-button"
-            disabled={loading || !inputText.trim()}
-            aria-label="Send message"
-          >
-            Send
-          </button>
-        </div>
-      </form>
+      {/* Input Area */}
+      <div className="chat-input-container">
+        <form onSubmit={handleSubmit} className="chat-input-form">
+          <div className="input-wrapper">
+            <input
+              type="text"
+              id="chat-input"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder={listening ? "Listening..." : "Message TigerTix..."}
+              className="chat-input"
+              aria-label="Chat input"
+              disabled={loading}
+            />
+            
+            <button
+              type="button"
+              onClick={startListening}
+              className={`mic-button ${listening ? "listening" : ""}`}
+              aria-label="Voice input"
+              disabled={loading}
+              title="Click to use voice input"
+            >
+              🎤
+            </button>
+            
+            <button 
+              type="submit" 
+              className="send-button"
+              disabled={loading || !inputText.trim()}
+              aria-label="Send message"
+            >
+              ➤
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
