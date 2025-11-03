@@ -42,6 +42,20 @@ const buyTicket = (eventId) => {
 };
 
 
+
+const updateEventTickets = (eventId, ticketsPurchased) => {
+  setEvents((prevEvents) =>
+    prevEvents.map((event) =>
+      event.id === eventId
+        ? { ...event, number_of_tickets: event.number_of_tickets - ticketsPurchased }
+        : event
+    )
+  );
+};
+
+
+
+
 return (
   <div className="App">
    <h1 id = "page title"> Clemson Campus Events</h1>
