@@ -1,3 +1,9 @@
+/**
+ * llm.test.js
+ * Integration tests for the LLM service endpoints.
+ * These tests cover various scenarios for the /api/llm/parse and /api/llm/confirm endpoints.
+ * They mock external LLM API calls to ensure consistent and reliable testing.
+ */
 // At the top of llm.test.js
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation(() => {});

@@ -1,3 +1,8 @@
+/**
+ * concurrency.test.js
+ * Database Concurrency Tests for Ticket Booking
+ * Tests concurrent booking requests to ensure data integrity
+ */
 const request = require('supertest');
 const app = require('../../server');
 

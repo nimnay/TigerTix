@@ -1,3 +1,8 @@
+#
+# test-api.sh
+# End-to-end test script for LLM service API endpoints
+# Runs a series of tests against the /parse and /confirm endpoints
+# and formats the output for readability.
 #!/bin/bash
 
 # Colors for output

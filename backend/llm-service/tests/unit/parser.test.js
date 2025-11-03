@@ -1,3 +1,9 @@
+/**
+ * parser.test.js
+ * Unit Tests for LLM Parser Service
+ * Tests the parsing logic for different user intents
+ * Includes tests for greeting, viewing events, and booking tickets
+ */
 require('dotenv').config();
 const { parseBookingRequest, fallbackParser } = require('../../services/llmParser');
 

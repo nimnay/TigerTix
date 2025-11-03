@@ -1,4 +1,5 @@
 /**
+ * clientController.test.js
  * Unit Tests for Client Controller
  * Tests controller functions and validation logic
  */
@@ -9,6 +10,19 @@ const clientModel = require('../../models/clientModel');
 // Mock the clientModel
 jest.mock('../../models/clientModel');
 
+/**
+ * Client Controller Unit Tests
+ * --------------------
+ * Test 1 : Successful fetch of events
+ * Test 2 : Database error handling
+ * Test 3 : No events available
+ * Test 4 : Successful ticket purchase
+ * Test 5 : Invalid event ID (non-numeric)
+ * Test 6 : Missing event ID
+ * Test 7 : Purchase error handling
+ * Test 8 : Additional edge case tests
+ * --------------------
+ */
 describe('Client Controller Unit Tests', () => {
   let req, res;
 
@@ -26,6 +40,7 @@ describe('Client Controller Unit Tests', () => {
   });
 
   describe('getEvents', () => {
+    // Test 1 : Successful fetch of events
     test('should return all events successfully', () => {
       const mockEvents = [
         { id: 1, name: 'Event 1', tickets_sold: 10, number_of_tickets: 100 },
@@ -43,6 +58,7 @@ describe('Client Controller Unit Tests', () => {
       expect(res.status).not.toHaveBeenCalled(); // No error status
     });
 
+    // Test 2 : Database error handling
     test('should handle database error when fetching events', () => {
       clientModel.getAllEvents.mockImplementation((callback) => {
         callback(new Error('Database connection failed'));
@@ -54,6 +70,7 @@ describe('Client Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch events' });
     });
 
+    // Test 3 : No events available
     test('should return empty array when no events exist', () => {
       clientModel.getAllEvents.mockImplementation((callback) => {
         callback(null, []);
@@ -66,6 +83,7 @@ describe('Client Controller Unit Tests', () => {
   });
 
   describe('purchase', () => {
+    // Test 4 : Successful ticket purchase
     test('should purchase ticket successfully with valid event ID', () => {
       req.params.id = '1';
 
@@ -82,6 +100,7 @@ describe('Client Controller Unit Tests', () => {
       });
     });
 
+    // Test 5 : Invalid event ID (non-numeric)
     test('should reject invalid event ID (non-numeric)', () => {
       req.params.id = 'abc';
 
@@ -92,6 +111,7 @@ describe('Client Controller Unit Tests', () => {
       expect(clientModel.purchaseTicket).not.toHaveBeenCalled();
     });
 
+    // Test 6 : Missing event ID
     test('should reject empty event ID', () => {
       req.params.id = '';
 
@@ -101,6 +121,7 @@ describe('Client Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Invalid event ID' });
     });
 
+    // Test 7 : Purchase error handling
     test('should handle purchase error from model', () => {
       req.params.id = '999';
 
@@ -116,6 +137,7 @@ describe('Client Controller Unit Tests', () => {
       });
     });
 
+    // Test 8 : Additional edge case tests
     test('should handle negative event ID', () => {
       req.params.id = '-5';
 
@@ -125,6 +147,7 @@ describe('Client Controller Unit Tests', () => {
       expect(clientModel.purchaseTicket).toHaveBeenCalledWith(-5, expect.any(Function));
     });
 
+    // Test 9 : Handle zero event ID
     test('should handle zero event ID', () => {
       req.params.id = '0';
 
@@ -133,6 +156,7 @@ describe('Client Controller Unit Tests', () => {
       expect(clientModel.purchaseTicket).toHaveBeenCalledWith(0, expect.any(Function));
     });
 
+    // Test 10 : Handle very large event ID
     test('should handle very large event ID', () => {
       req.params.id = '999999999';
 

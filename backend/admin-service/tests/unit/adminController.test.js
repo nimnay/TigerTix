@@ -1,4 +1,5 @@
 /**
+ * adminController.test.js
  * Unit Tests for Admin Controller
  * Tests validation logic and controller functions
  */
@@ -26,7 +27,22 @@ describe('Admin Controller Unit Tests', () => {
     };
   });
 
+  /**
+   * createEvent Tests
+   * ---------------------
+   * Test 1 : Successful event creation
+   * Test 2 : Validation errors
+   * Test 3: Invalid date format
+   * Test 4 : Negative ticket count
+   * Test 5: Non-integer ticket count
+   * Test 6 : Missing location
+   * Test 7 : Missing description
+   * Test 8 : Database error handling
+   * Test 9 : Zero ticket count
+   * --------------------
+   */
   describe('createEvent', () => {
+    // Test 1 : Successful event creation
     test('should create event with valid data', () => {
       const validEvent = {
         name: 'Test Concert',
@@ -52,6 +68,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ id: 1, ...validEvent });
     });
 
+    // Test 2 : Validation errors
     test('should reject event with missing name', () => {
       req.body = {
         date: '2025-12-01',
@@ -67,6 +84,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(adminModel.createEvent).not.toHaveBeenCalled();
     });
 
+    // Test 3: Invalid date format
     test('should reject event with invalid date', () => {
       req.body = {
         name: 'Test Concert',
@@ -82,6 +100,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Invalid event data' });
     });
 
+    // Test 4 : Negative ticket count
     test('should reject event with negative ticket count', () => {
       req.body = {
         name: 'Test Concert',
@@ -97,6 +116,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Invalid event data' });
     });
 
+    // Test 5: Non-integer ticket count
     test('should reject event with non-integer ticket count', () => {
       req.body = {
         name: 'Test Concert',
@@ -112,6 +132,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Invalid event data' });
     });
 
+    // Test 6 : Missing location
     test('should reject event with missing location', () => {
       req.body = {
         name: 'Test Concert',
@@ -126,6 +147,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Invalid event data' });
     });
 
+    // Test 7 : Missing description
     test('should reject event with missing description', () => {
       req.body = {
         name: 'Test Concert',
@@ -140,6 +162,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Invalid event data' });
     });
 
+    // Test 8 : Database error handling
     test('should handle database error gracefully', () => {
       const validEvent = {
         name: 'Test Concert',
@@ -161,6 +184,7 @@ describe('Admin Controller Unit Tests', () => {
       expect(res.json).toHaveBeenCalledWith({ error: 'Failed to create event' });
     });
 
+    // Test 9 : Zero ticket count
     test('should accept event with zero tickets', () => {
       const validEvent = {
         name: 'Free Event',

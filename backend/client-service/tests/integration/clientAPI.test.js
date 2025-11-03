@@ -1,4 +1,5 @@
 /**
+ * clientAPI.test.js
  * Integration Tests for Client Service
  * Tests the full API endpoints with database
  */
@@ -14,13 +15,14 @@ app.use('/api', clientRoutes);
 
 describe('Client Service Integration Tests', () => {
   describe('GET /api/events', () => {
+    // Test 1 : Successful fetch of all events
     test('should retrieve all events successfully', async () => {
       const response = await request(app)
         .get('/api/events');
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
-      
+
       // Check if events have expected structure
       if (response.body.length > 0) {
         const event = response.body[0];
@@ -35,18 +37,20 @@ describe('Client Service Integration Tests', () => {
       }
     });
 
+    // Test 2 : Available tickets calculation
     test('should return events with correct available tickets calculation', async () => {
       const response = await request(app)
         .get('/api/events');
 
       expect(response.status).toBe(200);
-      
+
       response.body.forEach(event => {
         const expectedAvailable = event.number_of_tickets - event.tickets_sold;
         expect(event.available_tickets).toBe(expectedAvailable);
       });
     });
 
+    // Test 3 : Empty events list
     test('should return events in consistent format', async () => {
       const response = await request(app)
         .get('/api/events');
@@ -57,6 +61,7 @@ describe('Client Service Integration Tests', () => {
   });
 
   describe('POST /api/events/:id/purchase', () => {
+    // Test 4 : Successful ticket purchase
     test('should purchase ticket for valid event', async () => {
       // First get events to find a valid event with available tickets
       const eventsResponse = await request(app)
@@ -77,6 +82,7 @@ describe('Client Service Integration Tests', () => {
       }
     });
 
+    // Test 5 : Purchase for non-existent event
     test('should reject purchase for non-existent event', async () => {
       const response = await request(app)
         .post('/api/events/999999/purchase');
@@ -86,6 +92,7 @@ describe('Client Service Integration Tests', () => {
       expect(response.body.error).toContain('not found');
     });
 
+    // Test 6 : Invalid event ID format
     test('should reject purchase with invalid event ID format', async () => {
       const response = await request(app)
         .post('/api/events/invalid-id/purchase');
@@ -95,6 +102,7 @@ describe('Client Service Integration Tests', () => {
       expect(response.body.error).toBe('Invalid event ID');
     });
 
+    // Test 7 : Purchase with missing event ID
     test('should handle sold out event', async () => {
       // Try to purchase from an event that might be sold out
       // This test verifies the error handling
@@ -102,12 +110,13 @@ describe('Client Service Integration Tests', () => {
         .post('/api/events/9999/purchase');
 
       expect([200, 500]).toContain(response.status);
-      
+
       if (response.status === 500) {
         expect(response.body).toHaveProperty('error');
       }
     });
 
+    // Test 8: Verify ticket count decreases after purchase
     test('should decrement available tickets after purchase', async () => {
       const eventsResponse = await request(app)
         .get('/api/events');
@@ -138,6 +147,7 @@ describe('Client Service Integration Tests', () => {
       }
     });
 
+    // Test 9: Negative and zero event ID handling
     test('should handle negative event ID', async () => {
       const response = await request(app)
         .post('/api/events/-1/purchase');
@@ -146,6 +156,7 @@ describe('Client Service Integration Tests', () => {
       expect(response.body).toHaveProperty('error');
     });
 
+    // Test 10: Handle zero event ID
     test('should handle zero event ID', async () => {
       const response = await request(app)
         .post('/api/events/0/purchase');
@@ -155,13 +166,14 @@ describe('Client Service Integration Tests', () => {
     });
   });
 
+  // Test 11: Event Retrieval Validation
   describe('Event Retrieval Validation', () => {
     test('should return events with non-negative ticket counts', async () => {
       const response = await request(app)
         .get('/api/events');
 
       expect(response.status).toBe(200);
-      
+
       response.body.forEach(event => {
         expect(event.number_of_tickets).toBeGreaterThanOrEqual(0);
         expect(event.tickets_sold).toBeGreaterThanOrEqual(0);
@@ -169,12 +181,13 @@ describe('Client Service Integration Tests', () => {
       });
     });
 
+    // Test 12: Available tickets do not exceed total tickets
     test('should not exceed total tickets when calculating available', async () => {
       const response = await request(app)
         .get('/api/events');
 
       expect(response.status).toBe(200);
-      
+
       response.body.forEach(event => {
         expect(event.tickets_sold).toBeLessThanOrEqual(event.number_of_tickets);
       });

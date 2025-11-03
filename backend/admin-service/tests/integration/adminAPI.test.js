@@ -1,4 +1,5 @@
 /**
+ * adminAPI.test.js
  * Integration Tests for Admin Service
  * Tests the full API endpoints with database
  */
@@ -14,6 +15,8 @@ app.use('/api/admin', adminRoutes);
 
 describe('Admin Service Integration Tests', () => {
   describe('POST /api/admin/events', () => {
+
+    // Test 1 : Successful event creation
     test('should create a new event successfully', async () => {
       const newEvent = {
         name: 'Test Integration Concert',
@@ -36,6 +39,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.body.description).toBe(newEvent.description);
     });
 
+    // Test 2 : Validation errors
     test('should reject event with missing required fields', async () => {
       const invalidEvent = {
         name: 'Incomplete Event',
@@ -52,6 +56,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.body.error).toBe('Invalid event data');
     });
 
+    // Test 3 : Invalid date format
     test('should reject event with invalid date format', async () => {
       const invalidEvent = {
         name: 'Bad Date Event',
@@ -69,6 +74,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.body.error).toBe('Invalid event data');
     });
 
+    // Test 4 : Negative number of tickets
     test('should reject event with negative tickets', async () => {
       const invalidEvent = {
         name: 'Negative Tickets Event',
@@ -86,6 +92,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.body.error).toBe('Invalid event data');
     });
 
+    // Test 5 : Empty request body
     test('should reject empty request body', async () => {
       const response = await request(app)
         .post('/api/admin/events')
@@ -95,6 +102,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.body.error).toBe('Invalid event data');
     });
 
+    // Test 6 : Additional edge cases
     test('should accept event with large ticket count', async () => {
       const largeEvent = {
         name: 'Large Capacity Event',
@@ -112,6 +120,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.body.number_of_tickets).toBe(10000);
     });
 
+    // Test 7 : Special characters in event name
     test('should handle special characters in event name', async () => {
       const specialEvent = {
         name: 'Rock & Roll: The "Best" Concert!',
@@ -129,6 +138,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.body.name).toBe(specialEvent.name);
     });
 
+    // Test 8 : Non-string name field
     test('should reject event with non-string name', async () => {
       const invalidEvent = {
         name: 12345,
@@ -145,6 +155,7 @@ describe('Admin Service Integration Tests', () => {
       expect(response.status).toBe(400);
     });
 
+    // Test 9 : Future date handling
     test('should handle future dates correctly', async () => {
       const futureEvent = {
         name: 'Future Event',

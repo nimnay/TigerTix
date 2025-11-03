@@ -1,3 +1,8 @@
+/**
+ * validation.test.js
+ * Unit Tests for Validation Utilities
+ * Tests validation functions for ticket counts and input sanitization
+ */
 const { validateTicketCount, validateEventId, sanitizeInput } = require('../../utils/validation');
 
 describe('Validation Unit Tests', () => {
