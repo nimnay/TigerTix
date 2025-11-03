@@ -98,7 +98,8 @@ function Chat({ onBookingConfirmed }) {
       // Add assistant response to chat
       const assistantMessage = {
         role: "assistant",
-        text: data.response || data.message || "I received your request."
+        text: data.response || data.message || "I received your request.",
+        events: data.events || null // Include events if returned
       };
       setMessages(prev => [...prev, assistantMessage]);
 
@@ -180,6 +181,20 @@ function Chat({ onBookingConfirmed }) {
           <div key={index} className={`message ${msg.role}`}>
             <div className="message-content">
               {msg.text}
+              {msg.events && msg.events.length > 0 && (
+                <div className="events-list">
+                  {msg.events.map((event, idx) => (
+                    <div key={idx} className="event-card">
+                      <div className="event-name">{event.name}</div>
+                      <div className="event-details">
+                        <span>{event.date}</span>
+                        <span>{event.location}</span>
+                        <span>{event.available_tickets} tickets available</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
