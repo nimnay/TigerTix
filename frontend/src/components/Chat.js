@@ -179,6 +179,25 @@ function Chat({ onBookingConfirmed }) {
     }
   };
 
+  //keyboard shortcuts
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    // Ctrl + M to toggle mic
+    if (e.ctrlKey && e.key.toLowerCase() === "m") {
+      e.preventDefault();
+      startListening();
+    }
+    // Enter to send message
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, [startListening, handleSubmit]);
+
+
   return (
     <div className="chat-container">
       {/* Messages Area */}
