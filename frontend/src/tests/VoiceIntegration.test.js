@@ -1,11 +1,12 @@
 /**
+ * VoiceIntegration.test.js
  * Voice Feature Integration Tests
  * Tests end-to-end voice booking workflows
  */
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Chat from '../Chat';
+import Chat from '../components/Chat';
 
 // Mock implementations
 class MockSpeechRecognition {

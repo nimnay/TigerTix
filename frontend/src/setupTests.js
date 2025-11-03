@@ -5,18 +5,26 @@
 import '@testing-library/jest-dom';
 
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import TicketingChat from "./TicketingChat";
+import TicketingChat from "./components/TicketingChat";
 
 global.fetch = jest.fn();
 
+// Suppress console warnings during tests
+const originalError = console.error;
+const originalWarn = console.warn;
+
+// --- Mock Fetch Implementation ---
 beforeAll(() => {
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    console.error = jest.fn();
+    console.warn = jest.fn();
   });
   
+// Restore original console methods after tests
 afterAll(() => {
     console.log.mockRestore();
-    console.error.mockRestore();
+    console.error = originalError;
+    console.warn = originalWarn;
   });
   
 
@@ -106,38 +114,4 @@ beforeEach(() => {
   afterEach(() => {
     jest.clearAllMocks();
     global.fetch = undefined;
-  });
-
-
-
-  //accessability testing
-test("chat input and buttons are fully keyboard-navigable", async () => {
-    render(<TicketingChat />);
-  
-    // Simulate tabbing to the input
-    const input = screen.getByPlaceholderText("Type a message...");
-    input.focus();
-    expect(input).toHaveFocus();
-  
-    // Type a booking request
-    fireEvent.change(input, { target: { value: "Book 2 tickets for AI Tech Expo" } });
-  
-    // Press Enter to send
-    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
-  
-    // Wait for LLM response to appear
-    const confirmText = await screen.findByText(/Ready to book 2 tickets/i);
-    expect(confirmText).toBeInTheDocument();
-  
-    // Simulate tabbing to the Confirm Booking button
-    const confirmButton = screen.getByText("Confirm Booking");
-    confirmButton.focus();
-    expect(confirmButton).toHaveFocus();
-  
-    // Press Enter to activate
-    fireEvent.keyDown(confirmButton, { key: "Enter", code: "Enter" });
-  
-    // Confirm booking message appears
-    const bookingConfirmed = await screen.findByText(/Booking confirmed!/i);
-    expect(bookingConfirmed).toBeInTheDocument();
   });

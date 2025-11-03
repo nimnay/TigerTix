@@ -1,3 +1,9 @@
+/**
+ * useSpeechRecognition.js
+ * Custom React hook for speech recognition
+ * Uses Web Speech API to handle voice input
+ * Provides start/stop listening controls and recognition results
+ */
 import { useState, useEffect } from "react";
 
 export default function useSpeechRecognition(onResult) {

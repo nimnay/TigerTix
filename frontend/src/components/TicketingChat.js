@@ -1,11 +1,22 @@
+/**
+ * TicketingChat.js
+ * Chat component for ticket booking assistant
+ * Integrates with backend LLM service for processing messages and bookings
+ * Handles user messages, booking confirmations, and displays chat history
+ */
 import React, { useState } from "react";
 
+/**
+ * TicketingChat component
+ * @param {Object} props
+ * @param {Function} props.onBookingConfirmed - Callback when booking is confirmed
+ * @returns {JSX.Element} 
+ */
 export default function TicketingChat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [pendingBooking, setPendingBooking] = useState(null);
   const [loading, setLoading] = useState(false);
-
 
   const sendMessage = async () => {
     if (!input.trim()) return;

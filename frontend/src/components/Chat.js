@@ -1,6 +1,19 @@
+/**
+ * Chat.js
+ * Chat component with voice recognition and text-to-speech
+ * Uses Web Speech API for voice input and output
+ * Integrates with backend LLM service for processing messages
+ */
 import React, { useState, useEffect, useCallback } from "react";
-import "./Chat.css";
+import "../styles/Chat.css";
 
+/**
+ * Chat component with voice recognition and text-to-speech
+ * Uses Web Speech API for voice input and output
+ * Integrates with backend LLM service for processing messages
+ * @param {*} props
+ * @returns {JSX.Element}
+ */
 function Chat({ onBookingConfirmed }) {
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState([]);
@@ -62,7 +75,6 @@ function Chat({ onBookingConfirmed }) {
     };
   }, [playBeep]);
 
-  // --- Text-to-Speech Function ---
   const speak = useCallback((text) => {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();

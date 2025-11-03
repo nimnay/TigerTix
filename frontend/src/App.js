@@ -1,6 +1,12 @@
+/**
+ * App.js
+ * Main Application Component
+ * Displays events and integrates Chat component
+ * Fetches event data from backend API
+ */
 import React, { useEffect, useState } from 'react';
-import Chat from './Chat';
-import './App.css';
+import Chat from './components/Chat';
+import './styles/App.css';
 function App() {
   const [events, setEvents] = useState([]);
   const [message, setMessage] = useState("");

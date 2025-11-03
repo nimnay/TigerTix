@@ -1,4 +1,5 @@
 /**
+ * Chat.voice.test.js
  * Voice Interface Tests for Chat Component
  * Tests speech recognition, text-to-speech, and voice interactions
  */
@@ -6,7 +7,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Chat from '../Chat';
+import Chat from '../components/Chat';
 
 // Mock Web Speech APIs
 class MockSpeechRecognition {
@@ -109,6 +110,7 @@ describe('Chat Voice Interface Tests', () => {
   });
 
   describe('Speech Recognition (Voice Input)', () => {
+    // Test 1: Microphone button enables speech recognition
     test('should enable microphone button when speech recognition is supported', () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -116,6 +118,7 @@ describe('Chat Voice Interface Tests', () => {
       expect(micButton).not.toBeDisabled();
     });
 
+    // Test 2: Clicking microphone button starts listening
     test('should start listening when microphone button is clicked', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -127,6 +130,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 3: Voice transcript updates input text
     test('should update input text with voice transcript', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -141,6 +145,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 4: "Listening..." placeholder during recording
     test('should show "Listening..." placeholder while recording', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -153,6 +158,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 5: Play beep sound when starting voice recognition
     test('should play beep sound when starting voice recognition', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -164,6 +170,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 6: Handle speech recognition not supported
     test('should handle speech recognition not supported', () => {
       delete global.SpeechRecognition;
       delete global.webkitSpeechRecognition;
@@ -181,6 +188,7 @@ describe('Chat Voice Interface Tests', () => {
       );
     });
 
+    // Test 7: Configure speech recognition settings
     test('should configure speech recognition with correct settings', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -194,6 +202,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 8: Handle speech recognition errors
     test('should handle speech recognition errors', async () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation();
       
@@ -214,6 +223,7 @@ describe('Chat Voice Interface Tests', () => {
   });
 
   describe('Text-to-Speech (Voice Output)', () => {
+    // Test 9: Speak assistant responses
     test('should speak assistant responses', async () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
@@ -236,6 +246,7 @@ describe('Chat Voice Interface Tests', () => {
       expect(utteranceArg.text).toBe('Welcome to TigerTix!');
     });
 
+    // 10: Configure speech synthesis settings
     test('should configure speech synthesis with correct settings', async () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
@@ -260,6 +271,7 @@ describe('Chat Voice Interface Tests', () => {
       expect(utterance.lang).toBe('en-US');
     });
 
+    // Test 11: Cancel previous speech before speaking new message
     test('should cancel previous speech before speaking new message', async () => {
       global.fetch = jest.fn(() =>
         Promise.resolve({
@@ -279,6 +291,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 12: Speak booking confirmation message
     test('should speak booking confirmation message', async () => {
       global.fetch = jest.fn()
         .mockResolvedValueOnce({
@@ -314,6 +327,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 13: Handle text-to-speech not supported
     test('should handle text-to-speech not supported', async () => {
       delete global.speechSynthesis;
 
@@ -338,6 +352,7 @@ describe('Chat Voice Interface Tests', () => {
   });
 
   describe('Voice and Text Combined Workflow', () => {
+    // Test 14: Voice input followed by text submission
     test('should support voice input followed by text submission', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -356,6 +371,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 15: Edit transcribed text before sending
     test('should allow editing voice-transcribed text before sending', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
@@ -372,6 +388,7 @@ describe('Chat Voice Interface Tests', () => {
       expect(input.value).toBe('Book 2 tickets for Concert');
     });
 
+    // Test 16: Disable voice button while loading
     test('should disable voice button while loading', async () => {
       global.fetch = jest.fn(() => new Promise(resolve => {
         setTimeout(() => resolve({
@@ -391,6 +408,7 @@ describe('Chat Voice Interface Tests', () => {
     });
   });
 
+  // Additional Accessibility Tests for Voice Features
   describe('Voice Accessibility Features', () => {
     test('should have aria-label for voice input button', () => {
       render(<Chat />);
@@ -409,6 +427,7 @@ describe('Chat Voice Interface Tests', () => {
       });
     });
 
+    // Test 17: Placeholder text updates for voice state
     test('should show appropriate placeholder text for voice state', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
