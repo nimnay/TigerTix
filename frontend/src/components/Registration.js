@@ -54,8 +54,7 @@ export default function RegistrationForm({apiBase = ""}) {
         
         setSubmitting(true);
         try {
-            // MUST CHANGE TO ACTUAL API ENDPOINT
-            const res = await fetch(`${apiBase}/api/register`, {
+            const res = await fetch(`http://localhost:7001/api/register`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({email, username, password}),
