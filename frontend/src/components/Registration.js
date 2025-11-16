@@ -94,9 +94,90 @@ export default function RegistrationForm({apiBase = ""}) {
                 </div>
             )}
 
-        </form>    
+            <label>
+                Email
+                <input
+                    name="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    required
+                />
+            </label>
 
+            {errors.email && ( 
+                <div id="email-error" role="alert" className="field-error">
+                    {errors.email}
+                </div>
+            )}
+            <label>
+                Username
+                <input
+                    name="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    aria-invalid={!!errors.username}
+                    aria-describedby={errors.username ? "username-error" : undefined}
+                    required
+                />
+            </label>
+            {errors.username && ( 
+                <div id="username-error" role="alert" className="field-error">
+                    {errors.username}
+                </div>
+            )}
+            <label>
+                Password
+                <input
+                    name="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    aria-invalid={!!errors.password}
+                    aria-describedby={errors.password ? "password-error" : "password-hint"}
+                    required
+                />
+            </label>
+            {errors.password && ( 
+                <div id="password-error" role="alert" className="field-error">
+                    {errors.password}
+                </div>
+            )}
+            <div id ="password-hint" className="pw-hint">
+                <small>Password must be ≥ 8 characters and include upper/lower/number (symbol optional). </small>
+                <div className="pw-checks">
+                    <div className={pwState.lengthOk ? "ok" : "bad"}>≥ 8 chars</div>
+                    <div className={pwState.hasUpper ? "ok" : "bad"}>Uppercase</div>
+                    <div className={pwState.hasLower ? "ok" : "bad"}>Lowercase</div>
+                    <div className={pwState.hasNumber ? "ok" : "bad"}>Number</div>
+                </div>
+            </div>
+            <label>
+                Confirm Password
+                <input
+                    name="confirm"
+                    type="password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
+                    aria-invalid={!!errors.confirm}
+                    aria-describedby={errors.confirm ? "confirm-error" : undefined}
+                    required
+                />
+            </label>
+            {errors.confirm && ( 
+                <div id="confirm-error" role="alert" className="field-error">
+                    {errors.confirm}
+                </div>
+            )}
+
+            <div className="form-row">
+                <button type="submit" disabled={submitting}>
+                    {submitting ? "Registering..." : "Register"}
+                </button>
+            </div>
+        </form>    
     );
-    
 }
 
