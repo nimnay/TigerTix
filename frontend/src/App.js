@@ -11,9 +11,13 @@ import RegistrationForm from "./components/Registration";
 import LoginForm from "./components/LoginForm";
 
 
+
+
 function App() {
   const [events, setEvents] = useState([]);
   const [message, setMessage] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
+
   
   
   //function that shows events
@@ -68,31 +72,38 @@ const updateEventTickets = (eventId, ticketsPurchased) => {
 
 return (
   <div className="App">
-   <h1 id = "page title"> Clemson Campus Events</h1>
+    <h1 id = "page title"> Clemson Campus Events</h1>
 
-  <RegistrationForm />
-  <LoginForm />
+    {!loggedIn ? (
+      <>
+      
+      <LoginForm onSuccess={() => setLoggedIn(true)} />
+      <RegistrationForm onSuccess={() => setLoggedIn(true)}/>
+      </>
+    ) : (
+      <>
+      <Chat onBookingConfirmed={fetchEvents} />
    
-  <Chat onBookingConfirmed={fetchEvents} />
-   
-    <section aria-labelledby="Event-List">
-      <h2 id = "Event-List"> Upcoming Events </h2>
+      <section aria-labelledby="Event-List">
+        <h2 id = "Event-List"> Upcoming Events </h2>
 
 
-      <ul aria-live = "polite">
-      {events.map((event) => (
-        <li key={event.id}>
-          {event.name} - {event.date} - Tickets Available: {event.available_tickets}{' '}
-          <button onClick={() => buyTicket(event.id)} disabled={event.available_tickets === 0}>Buy Ticket</button>
-        </li>
-       ))}
-     </ul>
-    </section>
+        <ul aria-live = "polite">
+        {events.map((event) => (
+          <li key={event.id}>
+            {event.name} - {event.date} - Tickets Available: {event.available_tickets}{' '}
+            <button onClick={() => buyTicket(event.id)} disabled={event.available_tickets === 0}>Buy Ticket</button>
+          </li>
+        ))}
+      </ul>
+      </section>
 
-   <div role="status" aria-live="assertive" aria-atomic="true">
-  {message || ''}
-  </div>
-  </div>
+    <div role="status" aria-live="assertive" aria-atomic="true">
+      {message || ''}
+      </div>
+      </>
+      )}
+    </div>
   );
 }
 
