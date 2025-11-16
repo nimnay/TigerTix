@@ -1,0 +1,183 @@
+
+.form-card {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.form-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+  
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #4A90E2;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s ease;
+  }
+  
+.btn-primary:hover {
+    background: #357ABD;
+}
+  
+.error {
+    color: #D9534F;
+    font-size: 0.9rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+/* ====== GENERAL FORM CONTAINER ====== */
+.auth-form {
+    max-width: 380px;
+    margin: 2rem auto;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    font-family: "Inter", sans-serif;
+}
+  
+ /* Form title */
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+  
+/* ====== FORM FIELDS ====== */
+  
+label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+    display: block;
+    margin-bottom: 0.35rem;
+}
+  
+input {
+    width: 100%;
+    padding: 10px;
+    font-size: 0.95rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s;
+    margin-bottom: 0.8rem;
+    background: #fafafa;
+}
+  
+/* Focus effect */
+input:focus {
+    border-color: #7b5cff;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(123, 92, 255, 0.15);
+}
+  
+/* ====== ERROR & SUCCESS MESSAGES ====== */
+  
+.field-error {
+    color: #d9534f;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+  
+.auth-msg {
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+  
+.auth-msg.error {
+    background: #fdecea;
+    color: #d9534f;
+}
+  
+.auth-msg.success {
+    background: #e8f7e9;
+    color: #28a745;
+}
+  
+/* ====== PASSWORD HINTS ====== */
+  
+.pw-hint {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.6rem;
+}
+  
+.pw-checks {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+  
+.pw-checks .ok {
+    color: #28a745;
+    font-size: 0.75rem;
+}
+  
+.pw-checks .bad {
+    color: #d9534f;
+    font-size: 0.75rem;
+}
+  
+  /* ===== BUTTON STYLES ===== */
+  
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    font-size: 1rem;
+    border-radius: 8px;
+    background: #7b5cff;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 500;
+}
+  
+button:hover {
+    background: #6847ff;
+}
+  
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+  
+.auth-form {
+    border: 3px solid red;
+  }
+  
