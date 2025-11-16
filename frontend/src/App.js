@@ -7,6 +7,10 @@
 import React, { useEffect, useState } from 'react';
 import Chat from './components/Chat';
 import './styles/App.css';
+import RegistrationForm from "./components/Registration";
+import LoginForm from "./components/LoginForm";
+
+
 function App() {
   const [events, setEvents] = useState([]);
   const [message, setMessage] = useState("");
@@ -48,7 +52,7 @@ const buyTicket = (eventId) => {
 };
 
 
-
+/*
 const updateEventTickets = (eventId, ticketsPurchased) => {
   setEvents((prevEvents) =>
     prevEvents.map((event) =>
@@ -58,13 +62,16 @@ const updateEventTickets = (eventId, ticketsPurchased) => {
     )
   );
 };
-
+*/
 
 
 
 return (
   <div className="App">
    <h1 id = "page title"> Clemson Campus Events</h1>
+
+  <RegistrationForm />
+  <LoginForm />
    
   <Chat onBookingConfirmed={fetchEvents} />
    
