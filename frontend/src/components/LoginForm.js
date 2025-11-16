@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import "../styles/FormStyles.css";
+
 
 
 const emailOrUsernameRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$|^[a-zA-Z0-9_-]{3,30}$/;

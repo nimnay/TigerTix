@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import "../styles/FormStyles.css";
 
 //for validation
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
