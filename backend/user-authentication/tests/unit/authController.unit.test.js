@@ -4,8 +4,8 @@
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { register, login, logout } = require('../controllers/authController');
-const { createUser, getUserByUsername } = require('../models/userModel');
+const { register, login, logout } = require('../../controllers/authController');
+const { createUser, getUserByUsername } = require('../../models/userModel');
 
 // Mock the models
 jest.mock('../models/userModel');
