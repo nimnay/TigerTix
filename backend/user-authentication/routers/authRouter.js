@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/register', register);
 router.post('/login', login);
-router.post('/logout', authMiddleware, logout);
+router.post('/logout', logout); // log out should not require authentication...
 
 router.get('/profile', authMiddleware, (req, res) => {
     res.json({ message: 'This is a protected profile route', userId: req.userId });

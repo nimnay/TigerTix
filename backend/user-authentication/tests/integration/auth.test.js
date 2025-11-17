@@ -17,7 +17,8 @@ const path = require('path');
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 
-
+// If tests are in tests/integration/, use '../..'
+// If tests are in tests/, use '..'
 const authRoutes = require('../../routers/authRouter');
 const authMiddleware = require('../../middleware/authMiddleware');
 
@@ -28,33 +29,8 @@ describe('Authentication Integration Tests', () => {
     let app;
     let db;
 
-    beforeAll(() => {
-        // Create test Express app
-        app = express();
-        app.use(express.json());
-        app.use(cookieParser());
-        
-        // Mount auth routes
-        app.use('/api/auth', authRoutes);
-        
-        // Mock protected Admin routes
-        app.get('/api/admin/events', authMiddleware, (req, res) => {
-            res.json({ 
-                message: 'Admin events accessed',
-                userId: req.userId 
-            });
-        });
-        
-        // Mock protected Client routes
-        app.post('/api/events/:id/purchase', authMiddleware, (req, res) => {
-            res.json({ 
-                message: 'Purchase successful',
-                eventId: req.params.id,
-                userId: req.userId 
-            });
-        });
-
-        // Initialize test database
+    beforeAll((done) => {
+        // Initialize test database FIRST
         db = new sqlite3.Database(TEST_DB_PATH);
         db.run(`
             CREATE TABLE IF NOT EXISTS users (
@@ -64,7 +40,40 @@ describe('Authentication Integration Tests', () => {
                 email TEXT UNIQUE NOT NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
-        `);
+        `, (err) => {
+            if (err) {
+                console.error('Error creating test database:', err);
+                done(err);
+                return;
+            }
+
+            // Create test Express app AFTER database is ready
+            app = express();
+            app.use(express.json());
+            app.use(cookieParser());
+            
+            // Mount auth routes
+            app.use('/api/auth', authRoutes);
+            
+            // Mock protected Admin routes
+            app.get('/api/admin/events', authMiddleware, (req, res) => {
+                res.json({ 
+                    message: 'Admin events accessed',
+                    userId: req.userId 
+                });
+            });
+            
+            // Mock protected Client routes
+            app.post('/api/events/:id/purchase', authMiddleware, (req, res) => {
+                res.json({ 
+                    message: 'Purchase successful',
+                    eventId: req.params.id,
+                    userId: req.userId 
+                });
+            });
+
+            done();
+        });
     });
 
     afterAll((done) => {
