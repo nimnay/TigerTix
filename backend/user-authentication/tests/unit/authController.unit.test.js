@@ -8,7 +8,7 @@ const { register, login, logout } = require('../../controllers/authController');
 const { createUser, getUserByUsername } = require('../../models/userModel');
 
 // Mock the models
-jest.mock('../models/userModel');
+jest.mock('../../models/userModel');
 
 describe('AuthController Unit Tests', () => {
     let req, res;
