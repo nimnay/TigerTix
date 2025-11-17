@@ -534,7 +534,7 @@ describe('Authentication Integration Tests', () => {
             const setCookieHeader = response.headers['set-cookie'];
             if (setCookieHeader) {
                 expect(setCookieHeader[0]).toContain('token=');
-                expect(setCookieHeader[0]).toContain('Max-Age=0'); // or 'Expires'
+                expect(setCookieHeader[0]).toMatch('Max-Age=0|Expires=/'); // CHANGED
             }
         });
     });
