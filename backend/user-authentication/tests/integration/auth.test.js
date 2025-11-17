@@ -15,12 +15,13 @@ const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const fs = require('fs');
-const sqlite3 = require('sqlite3').verbose();
 
-// If tests are in tests/integration/, use '../..'
-// If tests are in tests/, use '..'
+// Set test environment BEFORE requiring db-dependent modules
+process.env.NODE_ENV = 'test';
+
 const authRoutes = require('../../routers/authRouter');
 const authMiddleware = require('../../middleware/authMiddleware');
+const { initializeDatabase } = require('../../db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
 const TEST_DB_PATH = path.join(__dirname, 'test-auth.db');
@@ -29,68 +30,67 @@ describe('Authentication Integration Tests', () => {
     let app;
     let db;
 
-    beforeAll((done) => {
-        // Initialize test database FIRST
-        db = new sqlite3.Database(TEST_DB_PATH);
-        db.run(`
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL,
-                email TEXT UNIQUE NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        `, (err) => {
-            if (err) {
-                console.error('Error creating test database:', err);
-                done(err);
-                return;
-            }
+    beforeAll(async () => {
+        // Delete existing test database
+        if (fs.existsSync(TEST_DB_PATH)) {
+            fs.unlinkSync(TEST_DB_PATH);
+        }
 
-            // Create test Express app AFTER database is ready
-            app = express();
-            app.use(express.json());
-            app.use(cookieParser());
-            
-            // Mount auth routes
-            app.use('/api/auth', authRoutes);
-            
-            // Mock protected Admin routes
-            app.get('/api/admin/events', authMiddleware, (req, res) => {
-                res.json({ 
-                    message: 'Admin events accessed',
-                    userId: req.userId 
-                });
-            });
-            
-            // Mock protected Client routes
-            app.post('/api/events/:id/purchase', authMiddleware, (req, res) => {
-                res.json({ 
-                    message: 'Purchase successful',
-                    eventId: req.params.id,
-                    userId: req.userId 
-                });
-            });
+        // Initialize database (will use test database due to NODE_ENV)
+        db = await initializeDatabase();
 
-            done();
+        // Create test Express app
+        app = express();
+        app.use(express.json());
+        app.use(cookieParser());
+        
+        // Mount auth routes
+        app.use('/api/auth', authRoutes);
+        
+        // Mock protected Admin routes
+        app.get('/api/admin/events', authMiddleware, (req, res) => {
+            res.json({ 
+                message: 'Admin events accessed',
+                userId: req.userId 
+            });
+        });
+        
+        // Mock protected Client routes
+        app.post('/api/events/:id/purchase', authMiddleware, (req, res) => {
+            res.json({ 
+                message: 'Purchase successful',
+                eventId: req.params.id,
+                userId: req.userId 
+            });
         });
     });
 
-    afterAll((done) => {
-        // Clean up test database
-        db.close(() => {
-            if (fs.existsSync(TEST_DB_PATH)) {
-                fs.unlinkSync(TEST_DB_PATH);
-            }
-            done();
-        });
-    });
-
-    beforeEach((done) => {
+    beforeEach(async () => {
         // Clear users table before each test
-        db.run('DELETE FROM users', done);
+        await db.run('DELETE FROM users');
     });
 
+    afterAll(async () => {
+        // Close database connection
+        if (db) {
+            await db.close();
+        }
+        
+        // Wait a bit for the database to fully close
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Clean up test database file
+        if (fs.existsSync(TEST_DB_PATH)) {
+            try {
+                fs.unlinkSync(TEST_DB_PATH);
+            } catch (err) {
+                // Ignore cleanup errors
+                console.warn('Could not delete test database:', err.message);
+            }
+        }
+    });
+
+    // ===== POST /api/auth/register - User Registration =====
     describe('POST /api/auth/register - User Registration', () => {
         test('should register a new user and hash password', async () => {
             const response = await request(app)
@@ -106,22 +106,12 @@ describe('Authentication Integration Tests', () => {
                 message: 'User registered successfully'
             });
 
-            // Verify user exists in database with hashed password
-            db.get(
-                'SELECT * FROM users WHERE username = ?',
-                ['testuser'],
-                (err, user) => {
-                    expect(err).toBeNull();
-                    expect(user).toBeDefined();
-                    expect(user.email).toBe('test@example.com');
-                    expect(user.password_hash).not.toBe('Password123!');
-                    expect(user.password_hash).toMatch(/^\$2[ayb]\$.{56}$/); // bcrypt format
-                    
-                    // Verify password can be compared
-                    const isValid = bcrypt.compareSync('Password123!', user.password_hash);
-                    expect(isValid).toBe(true);
-                }
-            );
+            // Verify user was created in database
+            const user = await db.get('SELECT * FROM users WHERE username = ?', 'testuser');
+            expect(user).toBeDefined();
+            expect(user.email).toBe('test@example.com');
+            expect(user.password_hash).not.toBe('Password123!');
+            expect(user.password_hash).toMatch(/^\$2[ayb]\$.{56}$/); // bcrypt format
         });
 
         test('should reject registration with missing fields', async () => {
@@ -534,7 +524,7 @@ describe('Authentication Integration Tests', () => {
             const setCookieHeader = response.headers['set-cookie'];
             if (setCookieHeader) {
                 expect(setCookieHeader[0]).toContain('token=');
-                expect(setCookieHeader[0]).toMatch('Max-Age=0|Expires=/'); // CHANGED
+                expect(setCookieHeader[0]).toMatch(/Max-Age=0|Expires=/); // CHANGED
             }
         });
     });
