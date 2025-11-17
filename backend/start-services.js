@@ -12,6 +12,7 @@ const dotenv = require("dotenv");
 const services = [
   { name: "Admin Service", path: "./admin-service/server.js" },
   { name: "Client Service", path: "./client-service/server.js" },
+  { name: "Auth Service", path: "./user-authentication/server.js" },
 ];
 
 // Conditionally start llm-service if the env is configured
@@ -63,6 +64,9 @@ services.forEach((service) => {
     childEnv = { ...childEnv, PORT: process.env.ADMIN_PORT || "5001" };
   } else if (service.name === "Client Service") {
     // Client-service has a hardcoded port in its server.js, no change needed
+    childEnv = { ...childEnv };
+  } else if (service.name === "Auth Service") {
+    // Auth service uses port 3001 (hardcoded in server.js)
     childEnv = { ...childEnv };
   } else if (service.name === "LLM Service") {
     // Use the parsed llm env (which may contain PORT=7001 and keys)
