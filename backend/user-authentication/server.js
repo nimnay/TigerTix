@@ -1,12 +1,13 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const authRoutes = require('./routes/authRoutes');
+const authRouter = require('./routers/authRouter');
 
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
 
-app.use(express.json()); // parse JSON bodies
-app.use(cookieParser()); // parse cookies
+app.use('/auth', authRouter);
 
-app.use('/auth', authRoutes);
-
-app.listen(3001, () => console.log('Server running on port 3001'));
+app.listen(3001, () => {
+    console.log('User Authentication Service running on port 3001');
+});
