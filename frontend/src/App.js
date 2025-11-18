@@ -18,6 +18,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [showLogin, setShowLogin] = useState(true);
 
 
   
@@ -58,19 +59,6 @@ const buyTicket = (eventId) => {
 };
 
 
-/*
-const updateEventTickets = (eventId, ticketsPurchased) => {
-  setEvents((prevEvents) =>
-    prevEvents.map((event) =>
-      event.id === eventId
-        ? { ...event, number_of_tickets: event.number_of_tickets - ticketsPurchased }
-        : event
-    )
-  );
-};
-*/
-
-
 
 return (
   <div className="App">
@@ -82,22 +70,37 @@ return (
     )}
 
     {!loggedIn ? (
-      <>
+      <div>
+        {showLogin ? (
+          <div> }
       
-      <LoginForm 
-        onSuccess={(username) => {
-          setLoggedIn(true);
-          setCurrentUser(username);
-        }}
-      />
-      <RegistrationForm 
-        onSuccess={(username) => {
-          setLoggedIn(true)
-          setCurrentUser(username);
-        }}
-      />
-      </>
-    ) : (
+            <LoginForm 
+              onSuccess={(username) => {
+                setLoggedIn(true);
+                setCurrentUser(username);
+              }}
+            />
+            <p>
+              Don't have an account?{' '}
+              <button onClick={() => setShowLogin(false)}>Register</button>
+            </p>
+          </div>
+        ) : (
+         <div>
+            <RegistrationForm 
+              onSuccess={(username) => {
+              setLoggedIn(true)
+              setCurrentUser(username);
+            }}
+          />
+        <p>
+          Already have an account?{' '}
+          <button onClick={() => setShowLogin(true)}>Login</button>
+        </p>
+      </div>
+    )}
+  </div>
+) : (
       <>
       <Chat onBookingConfirmed={fetchEvents} />
    
