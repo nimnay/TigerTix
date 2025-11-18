@@ -3,11 +3,12 @@
 const express = require('express');
 const router = express.Router();
 const clientController = require('../controllers/clientController');
+const authMiddleware = require('../middleware/authMiddleware');
 
-// Get all events (frontend calls this to display events)
+// Get all events (public - no auth required)
 router.get('/events', clientController.getEvents);
 
-// Purchase a ticket (frontend calls this when user clicks "Reserve Ticket")
-router.post('/events/:id/purchase', clientController.purchase);
+// Purchase a ticket (protected - requires authentication)
+router.post('/events/:id/purchase', authMiddleware, clientController.purchase);
 
 module.exports = router;

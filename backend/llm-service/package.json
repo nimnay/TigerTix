@@ -12,6 +12,10 @@
     "coveragePathIgnorePatterns": ["/node_modules/"],
     "testMatch": ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"]
   },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "jsonwebtoken": "^9.0.2"
+  },
   "devDependencies": {
     "jest": "^29.7.0",
     "supertest": "^6.3.3"

@@ -5,13 +5,15 @@
  * Listens on port 5001.
  */
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const router = express.Router();
 const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-// Middleware to parse JSON bodies
+// Middleware to parse JSON bodies and cookies
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/admin', adminRoutes);
 
 // Health check endpoint

@@ -2,6 +2,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes/clientRoutes');
 // Run setup (creates table if needed)
@@ -10,6 +11,7 @@ require('./setup');
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 //Register routes with /api prefix
 app.use('/api', routes);

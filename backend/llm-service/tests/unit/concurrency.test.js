@@ -5,6 +5,10 @@
  */
 const request = require('supertest');
 const app = require('../../server');
+const jwt = require('jsonwebtoken');
+
+// Generate a test JWT token
+const testToken = jwt.sign({ userId: 1 }, 'secretkey', { expiresIn: '30m' });
 
 describe('Database Concurrency Tests', () => {
   test('should handle concurrent booking requests', async () => {
@@ -13,6 +17,7 @@ describe('Database Concurrency Tests', () => {
     // Get initial ticket count
     const initialResponse = await request(app)
       .post('/api/llm/parse')
+      .set('Authorization', `Bearer ${testToken}`)
       .send({ text: 'Show available events' });
     
     const initialEvent = initialResponse.body.events.find(e => e.id === eventId);
@@ -22,6 +27,7 @@ describe('Database Concurrency Tests', () => {
     const promises = Array(3).fill(null).map(() =>
       request(app)
         .post('/api/llm/confirm')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ eventId, tickets: 1 })
     );
 
@@ -31,6 +37,7 @@ describe('Database Concurrency Tests', () => {
     // Check final state
     const finalResponse = await request(app)
       .post('/api/llm/parse')
+      .set('Authorization', `Bearer ${testToken}`)
       .send({ text: 'Show available events' });
     
     const finalEvent = finalResponse.body.events.find(e => e.id === eventId);

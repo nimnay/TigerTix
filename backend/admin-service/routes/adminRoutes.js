@@ -7,9 +7,10 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const authMiddleware = require('../middleware/authMiddleware');
 
-// Route to create a new event
-// POST /api/events
-router.post('/events', adminController.createEvent);
+// Route to create a new event (protected - requires authentication)
+// POST /api/admin/events
+router.post('/events', authMiddleware, adminController.createEvent);
 
 module.exports = router;

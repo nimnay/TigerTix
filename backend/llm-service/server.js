@@ -4,6 +4,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const llmRoutes = require('./routes/llmRoutes');
 
 const app = express();
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 7001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // Routes
 app.use('/api/llm', llmRoutes);

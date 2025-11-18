@@ -7,11 +7,17 @@
 const request = require('supertest');
 const express = require('express');
 const clientRoutes = require('../../routes/clientRoutes');
-
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 // Create test app
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api', clientRoutes);
+
+// Generate a test token (if needed for future tests)
+const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
+const testToken = jwt.sign({ id: 1 }, JWT_SECRET, { expiresIn: '1h' });
 
 describe('Client Service Integration Tests', () => {
   describe('GET /api/events', () => {
@@ -73,7 +79,8 @@ describe('Client Service Integration Tests', () => {
 
       if (availableEvent) {
         const response = await request(app)
-          .post(`/api/events/${availableEvent.id}/purchase`);
+          .post(`/api/events/${availableEvent.id}/purchase`)
+          .set('Authorization', `Bearer ${testToken}`);
 
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty('success');
@@ -85,7 +92,8 @@ describe('Client Service Integration Tests', () => {
     // Test 5 : Purchase for non-existent event
     test('should reject purchase for non-existent event', async () => {
       const response = await request(app)
-        .post('/api/events/999999/purchase');
+        .post('/api/events/999999/purchase')
+        .set('Authorization', `Bearer ${testToken}`);
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('error');
@@ -95,7 +103,8 @@ describe('Client Service Integration Tests', () => {
     // Test 6 : Invalid event ID format
     test('should reject purchase with invalid event ID format', async () => {
       const response = await request(app)
-        .post('/api/events/invalid-id/purchase');
+        .post('/api/events/invalid-id/purchase')
+        .set('Authorization', `Bearer ${testToken}`);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty('error');
@@ -107,7 +116,8 @@ describe('Client Service Integration Tests', () => {
       // Try to purchase from an event that might be sold out
       // This test verifies the error handling
       const response = await request(app)
-        .post('/api/events/9999/purchase');
+        .post('/api/events/9999/purchase')
+        .set('Authorization', `Bearer ${testToken}`);
 
       expect([200, 500]).toContain(response.status);
 
@@ -130,7 +140,8 @@ describe('Client Service Integration Tests', () => {
 
         // Purchase a ticket
         const purchaseResponse = await request(app)
-          .post(`/api/events/${availableEvent.id}/purchase`);
+          .post(`/api/events/${availableEvent.id}/purchase`)
+          .set('Authorization', `Bearer ${testToken}`);
 
         if (purchaseResponse.status === 200) {
           // Fetch events again to verify ticket count decreased
@@ -150,7 +161,8 @@ describe('Client Service Integration Tests', () => {
     // Test 9: Negative and zero event ID handling
     test('should handle negative event ID', async () => {
       const response = await request(app)
-        .post('/api/events/-1/purchase');
+        .post('/api/events/-1/purchase')
+        .set('Authorization', `Bearer ${testToken}`);
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('error');
@@ -159,7 +171,8 @@ describe('Client Service Integration Tests', () => {
     // Test 10: Handle zero event ID
     test('should handle zero event ID', async () => {
       const response = await request(app)
-        .post('/api/events/0/purchase');
+        .post('/api/events/0/purchase')
+        .set('Authorization', `Bearer ${testToken}`);
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('error');

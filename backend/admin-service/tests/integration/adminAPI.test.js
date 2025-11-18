@@ -6,12 +6,19 @@
 
 const request = require('supertest');
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const adminRoutes = require('../../routes/adminRoutes');
 
 // Create test app
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/admin', adminRoutes);
+
+// Generate a test token
+const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
+const testToken = jwt.sign({ id: 1 }, JWT_SECRET, { expiresIn: '1h' });
 
 describe('Admin Service Integration Tests', () => {
   describe('POST /api/admin/events', () => {
@@ -28,6 +35,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(newEvent);
 
       expect(response.status).toBe(201);
@@ -49,6 +57,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(invalidEvent);
 
       expect(response.status).toBe(400);
@@ -68,6 +77,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(invalidEvent);
 
       expect(response.status).toBe(400);
@@ -86,6 +96,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(invalidEvent);
 
       expect(response.status).toBe(400);
@@ -96,6 +107,7 @@ describe('Admin Service Integration Tests', () => {
     test('should reject empty request body', async () => {
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({});
 
       expect(response.status).toBe(400);
@@ -114,6 +126,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(largeEvent);
 
       expect(response.status).toBe(201);
@@ -132,6 +145,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(specialEvent);
 
       expect(response.status).toBe(201);
@@ -150,6 +164,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(invalidEvent);
 
       expect(response.status).toBe(400);
@@ -167,6 +182,7 @@ describe('Admin Service Integration Tests', () => {
 
       const response = await request(app)
         .post('/api/admin/events')
+        .set('Authorization', `Bearer ${testToken}`)
         .send(futureEvent);
 
       expect(response.status).toBe(201);

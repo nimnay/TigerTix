@@ -18,12 +18,17 @@ afterAll(() => {
 
 const request = require('supertest');
 const app = require('../../server');
+const jwt = require('jsonwebtoken');
+
+// Generate a test JWT token
+const testToken = jwt.sign({ userId: 1 }, 'secretkey', { expiresIn: '30m' });
 
 describe('LLM Service Tests', () => {
   describe('POST /api/llm/parse', () => {
     test('should handle greeting intent', async () => {
       const response = await request(app)
         .post('/api/llm/parse')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ text: 'Hello' });
       
       expect(response.status).toBe(200);
@@ -34,6 +39,7 @@ describe('LLM Service Tests', () => {
     test('should handle view events intent', async () => {
       const response = await request(app)
         .post('/api/llm/parse')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ text: 'Show available events' });
       
       expect(response.status).toBe(200);
@@ -46,6 +52,7 @@ describe('LLM Service Tests', () => {
     test('should parse booking request for existing event', async () => {
       const response = await request(app)
         .post('/api/llm/parse')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ text: 'Book 2 tickets for AI Tech Expo' });
       
       expect(response.status).toBe(200);
@@ -59,6 +66,7 @@ describe('LLM Service Tests', () => {
     test('should handle booking request for non-existent event', async () => {
       const response = await request(app)
         .post('/api/llm/parse')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ text: 'Book 2 tickets for Jazz Night' });
       
       expect(response.status).toBe(200);
@@ -69,6 +77,7 @@ describe('LLM Service Tests', () => {
     test('should require text input', async () => {
       const response = await request(app)
         .post('/api/llm/parse')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({});
       
       expect(response.status).toBe(400);
@@ -78,6 +87,7 @@ describe('LLM Service Tests', () => {
     test('should handle empty text input', async () => {
       const response = await request(app)
         .post('/api/llm/parse')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ text: '' });
       
       expect(response.status).toBe(400);
@@ -87,19 +97,21 @@ describe('LLM Service Tests', () => {
     test('should handle invalid ticket quantity', async () => {
       const response = await request(app)
         .post('/api/llm/parse')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ text: 'Book -1 tickets' });
       
       expect(response.status).toBe(200);
       // LLM should process it and return a valid response (may vary based on LLM interpretation)
       expect(response.body).toBeDefined();
       expect(response.body.response || response.body.message).toBeDefined();
-    }, 10000); // Increase timeout to 10 seconds for LLM API call
+    }, 20000); // Increase timeout to 20 seconds for LLM API call
   });
 
   describe('POST /api/llm/confirm', () => {
     test('should confirm valid booking', async () => {
       const response = await request(app)
         .post('/api/llm/confirm')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({
           eventId: 1001, // AI Tech Expo
           tickets: 2
@@ -115,6 +127,7 @@ describe('LLM Service Tests', () => {
     test('should reject invalid event ID', async () => {
       const response = await request(app)
         .post('/api/llm/confirm')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ eventId: 999999, tickets: 1 });
       
       expect(response.status).toBe(400); // Your API returns 200 with error
@@ -125,6 +138,7 @@ describe('LLM Service Tests', () => {
     test('should reject invalid ticket count', async () => {
       const response = await request(app)
         .post('/api/llm/confirm')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ eventId: 1001, tickets: 0 });
       
       expect(response.status).toBe(400);
@@ -134,6 +148,7 @@ describe('LLM Service Tests', () => {
     test('should reject negative ticket count', async () => {
       const response = await request(app)
         .post('/api/llm/confirm')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ eventId: 1001, tickets: -5 });
       
       expect(response.status).toBe(400);
@@ -142,6 +157,7 @@ describe('LLM Service Tests', () => {
     test('should reject missing eventId', async () => {
       const response = await request(app)
         .post('/api/llm/confirm')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ tickets: 2 });
       
       expect(response.status).toBe(400);
@@ -150,6 +166,7 @@ describe('LLM Service Tests', () => {
     test('should reject missing tickets', async () => {
       const response = await request(app)
         .post('/api/llm/confirm')
+        .set('Authorization', `Bearer ${testToken}`)
         .send({ eventId: 1001 });
       
       expect(response.status).toBe(400);
@@ -159,13 +176,14 @@ describe('LLM Service Tests', () => {
 test('should use Gemini AI (not fallback)', async () => {
   const response = await request(app)
     .post('/api/llm/parse')
+    .set('Authorization', `Bearer ${testToken}`)
     .send({ text: 'Book 2 tickets for Homecoming Concert' });
   
   expect(response.status).toBe(200);
   // If Gemini works, it should parse this correctly
   // The fallback keyword parser is less accurate
   console.log('Response:', JSON.stringify(response.body, null, 2));
-}, 10000); // 10 second timeout for API call
+}, 20000); // 20 second timeout for API call
 
 
   afterAll((done) => {
