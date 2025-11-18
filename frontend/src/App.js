@@ -66,6 +66,13 @@ return (
     {loggedIn && currentUser && (
       <div className="logged-in-banner">
         Logged in as <strong>{currentUser}</strong>
+        <button onClick={() => {
+          setLoggedIn(false);   
+          setCurrentUser(null); 
+          setShowLogin(true);  
+        }}>
+          Logout
+        </button>
       </div>
     )}
 
