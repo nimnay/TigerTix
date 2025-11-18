@@ -101,7 +101,9 @@ function Chat({ onBookingConfirmed }) {
       // Send to LLM service
       const response = await fetch('http://localhost:7001/api/llm/parse', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      },
         body: JSON.stringify({ text: inputText })
       });
 
@@ -143,7 +145,10 @@ function Chat({ onBookingConfirmed }) {
     try {
       const response = await fetch('http://localhost:7001/api/llm/confirm', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+        },
+        credentials: 'include',
         body: JSON.stringify({
           eventId: pendingBooking.eventId,
           tickets: pendingBooking.tickets

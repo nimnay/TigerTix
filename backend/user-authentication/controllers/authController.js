@@ -88,9 +88,21 @@ async function login(req, res) {
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
-
+        
+    
         const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '30m' });
-        res.json({ token, username: user.username, message: "Login successful" });
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: false
+        });
+        
+        res.json({ 
+            username: user.username,
+            message: "Login successful" 
+        });
+
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Internal server error' });

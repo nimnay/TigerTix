@@ -29,7 +29,8 @@ export default function TicketingChat() {
     try {
       const res = await fetch("http://localhost:6001/api/llm/parse", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ message: input }),
       });
       const data = await res.json();
@@ -55,7 +56,8 @@ const confirmBooking = async () => {
     try {
       const res = await fetch("http://localhost:6001/api/llm/confirm", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 
+        "Authorization": `Bearer ${localStorage.getItem("token")}`},
         body: JSON.stringify({
           eventId: pendingBooking.eventId,
           tickets: pendingBooking.tickets,

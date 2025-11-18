@@ -32,6 +32,7 @@ export default function LoginForm({onSuccess, apiBase = "" }) {
       const res = await fetch(`http://localhost:3001/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ identity, password }),
       });
 
@@ -41,8 +42,12 @@ export default function LoginForm({onSuccess, apiBase = "" }) {
       }
 
       const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
       setMessage({ type: "success", text: data.message || "Logged in." });
-      // optionally store token: localStorage.setItem("token", data.token)
 
       if (typeof onSuccess === "function") {
         onSuccess(data.username);
