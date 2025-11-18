@@ -100,6 +100,7 @@ async function login(req, res) {
         
         res.json({ 
             username: user.username,
+            token,
             message: "Login successful" 
         });
 
