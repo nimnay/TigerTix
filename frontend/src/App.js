@@ -17,6 +17,8 @@ function App() {
   const [events, setEvents] = useState([]);
   const [message, setMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+
 
   
   
@@ -73,12 +75,27 @@ const updateEventTickets = (eventId, ticketsPurchased) => {
 return (
   <div className="App">
     <h1 id = "page title"> Clemson Campus Events</h1>
+    {loggedIn && currentUser && (
+      <div className="logged-in-banner">
+        Logged in as <strong>{currentUser}</strong>
+      </div>
+    )}
 
     {!loggedIn ? (
       <>
       
-      <LoginForm onSuccess={() => setLoggedIn(true)} />
-      <RegistrationForm onSuccess={() => setLoggedIn(true)}/>
+      <LoginForm 
+        onSuccess={(username) => {
+          setLoggedIn(true);
+          setCurrentUser(username);
+        }}
+      />
+      <RegistrationForm 
+        onSuccess={(username) => {
+          setLoggedIn(true)
+          setCurrentUser(username);
+        }}
+      />
       </>
     ) : (
       <>

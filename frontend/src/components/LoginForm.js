@@ -45,8 +45,9 @@ export default function LoginForm({onSuccess, apiBase = "" }) {
       // optionally store token: localStorage.setItem("token", data.token)
 
       if (typeof onSuccess === "function") {
-        onSuccess();
+        onSuccess(data.username);
       }
+      
     } catch (err) {
       setMessage({ type: "error", text: err.message || "Login failed." });
     } finally {

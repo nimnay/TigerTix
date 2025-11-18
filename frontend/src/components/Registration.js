@@ -68,7 +68,7 @@ export default function RegistrationForm({onSuccess, apiBase = ""}) {
             const data = await res.json();
 
             if (typeof onSuccess === "function") {
-                onSuccess();
+                onSuccess(username);
             }
 
             setMessage({ type: "success", text: data.message || "Registered successfully." });
