@@ -125,6 +125,7 @@ describe('AuthController Unit Tests', () => {
 
             expect(res.json).toHaveBeenCalledWith({
                 token: expect.any(String),
+                username: 'testuser', 
                 message: 'Login successful'
             });
             expect(getUserByUsername).toHaveBeenCalledWith('testuser');

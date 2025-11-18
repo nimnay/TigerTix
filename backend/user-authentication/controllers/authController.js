@@ -66,13 +66,20 @@ async function register(req, res) {
  */
 async function login(req, res) {
     try {
-        const { identity, password } = req.body;
+        // Support both 'identity' and 'username' for backwards compatibility
+        const identity = req.body.identity || req.body.username;
+        const { password } = req.body;
+
+        if (!identity || !password) {
+            return res.status(400).json({ message: 'Username/email and password are required' });
+        }
 
         const isEmail = identity.includes("@");
 
         const user = isEmail
             ? await getUserByEmail(identity)
             : await getUserByUsername(identity);
+        
         if (!user) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
