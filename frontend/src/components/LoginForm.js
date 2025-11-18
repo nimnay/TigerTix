@@ -5,7 +5,7 @@ import "../styles/FormStyles.css";
 
 const emailOrUsernameRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$|^[a-zA-Z0-9_-]{3,30}$/;
 
-export default function LoginForm({ apiBase = "" }) {
+export default function LoginForm({onSuccess, apiBase = "" }) {
   const [identity, setIdentity] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
@@ -43,6 +43,10 @@ export default function LoginForm({ apiBase = "" }) {
       const data = await res.json();
       setMessage({ type: "success", text: data.message || "Logged in." });
       // optionally store token: localStorage.setItem("token", data.token)
+
+      if (typeof onSuccess === "function") {
+        onSuccess();
+      }
     } catch (err) {
       setMessage({ type: "error", text: err.message || "Login failed." });
     } finally {

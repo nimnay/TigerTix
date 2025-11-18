@@ -21,7 +21,7 @@ function validatePassword(pw) {
     return {lengthOk, hasUpper, hasLower, hasNumber, hasSymbol};
 }
 
-export default function RegistrationForm({apiBase = ""}) {
+export default function RegistrationForm({onSuccess, apiBase = ""}) {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -66,6 +66,11 @@ export default function RegistrationForm({apiBase = ""}) {
                 throw new Error(err.message || `HTTP ${res.status}`);
             }
             const data = await res.json();
+
+            if (typeof onSuccess === "function") {
+                onSuccess();
+            }
+
             setMessage({ type: "success", text: data.message || "Registered successfully." });
             setEmail("");
             setUsername("");
