@@ -18,3 +18,8 @@ build/
 
 # Ignore env 
 .env
+
+# Test coverage
+coverage/
+*.lcov
+.nyc_output/
