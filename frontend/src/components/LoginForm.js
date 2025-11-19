@@ -50,7 +50,7 @@ export default function LoginForm({onSuccess, apiBase = "" }) {
       setMessage({ type: "success", text: data.message || "Logged in." });
 
       if (typeof onSuccess === "function") {
-        onSuccess(data.username);
+        onSuccess(data.username, data.token);
       }
       
     } catch (err) {

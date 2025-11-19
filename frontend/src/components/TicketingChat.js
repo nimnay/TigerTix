@@ -12,7 +12,7 @@ import React, { useState } from "react";
  * @param {Function} props.onBookingConfirmed - Callback when booking is confirmed
  * @returns {JSX.Element} 
  */
-export default function TicketingChat() {
+export default function TicketingChat({ onBookingConfirmed }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [pendingBooking, setPendingBooking] = useState(null);
@@ -27,16 +27,22 @@ export default function TicketingChat() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:6001/api/llm/parse", {
+      const res = await fetch("http://localhost:7001/api/llm/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("token")}` },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ text: input }),
       });
       const data = await res.json();
 
-      setMessages((prev) => [...prev, { role: "assistant", text: data.reply }]);
-      if (data.booking) setPendingBooking(data.booking);
+      // Display the response message
+      const replyText = data.response || data.message || "I couldn't understand that.";
+      setMessages((prev) => [...prev, { role: "assistant", text: replyText }]);
+      
+      // If there's a booking that needs confirmation, store it
+      if (data.needsConfirmation && data.booking) {
+        setPendingBooking(data.booking);
+      }
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -54,7 +60,7 @@ const confirmBooking = async () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:6001/api/llm/confirm", {
+      const res = await fetch("http://localhost:7001/api/llm/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json", 
         "Authorization": `Bearer ${localStorage.getItem("token")}`},
@@ -66,9 +72,11 @@ const confirmBooking = async () => {
 
       const data = await res.json();
       
-      setMessages((prev) => [...prev, { role: "assistant", text: data.response }]);
+      // Display confirmation message
+      const confirmText = data.response || data.message || "Booking confirmed!";
+      setMessages((prev) => [...prev, { role: "assistant", text: confirmText }]);
       
-      if (onBookingConfirmed) {
+      if (data.success && onBookingConfirmed) {
         onBookingConfirmed(data.eventId, data.ticketsPurchased);
       }
 
