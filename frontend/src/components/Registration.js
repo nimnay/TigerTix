@@ -58,7 +58,6 @@ export default function RegistrationForm({onSuccess, apiBase = ""}) {
             const res = await fetch(`http://localhost:3001/auth/register`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                credentials: "include",
                 body: JSON.stringify({email, username, password}),
             });
 
@@ -67,6 +66,9 @@ export default function RegistrationForm({onSuccess, apiBase = ""}) {
                 throw new Error(err.message || `HTTP ${res.status}`);
             }
             const data = await res.json();
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+            }
 
             if (typeof onSuccess === "function") {
                 onSuccess(username);

@@ -71,6 +71,7 @@ return (
       <div className="logged-in-banner">
         Logged in as <strong>{currentUser}</strong>
         <button onClick={() => {
+          localStorage.removeItem("token");
           setLoggedIn(false);   
           setCurrentUser(null); 
           setShowLogin(true);  
