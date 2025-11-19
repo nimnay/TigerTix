@@ -154,11 +154,16 @@ return (
 
 
         <ul aria-live = "polite">
-        {events.map((event) => (
-          <li key={event.id}>
-            {event.name} - {event.date} - Tickets Available: {event.available_tickets}{' '}
-            <button onClick={() => buyTicket(event.id)} disabled={event.available_tickets === 0}>Buy Ticket</button>
-          </li>
+          {(events || []).map((event) => (
+            <li key={event.id}>
+              {event.name} - {event.date} - Tickets Available: {event.available_tickets}{' '}
+              <button 
+                onClick={() => buyTicket(event.id)} 
+                disabled={event.available_tickets === 0}
+                >
+                  Buy Ticket
+                  </button>
+            </li>
         ))}
       </ul>
       </section>
