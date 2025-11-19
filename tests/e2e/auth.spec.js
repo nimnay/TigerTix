@@ -62,6 +62,7 @@ async function registerUser(page, username, email, password) {
   await page.fill('[name="username"]', username);
   await page.fill('[name="email"]', email);
   await page.fill('[name="password"]', password);
+  await page.getByLabel(/confirm password/i).fill(password);
   await page.click('button[type="submit"]');
 }
 
@@ -70,14 +71,14 @@ async function loginUser(page, username, password) {
   await page.fill('[name="username"]', username);
   await page.fill('[name="password"]', password);
   await page.click('button:has-text("Login")');
-  await page.waitForURL(/dashboard|home/, { timeout: 5000 });
+  await expect(page).toHaveURL('http://localhost:3000/');
 }
 
 function generateTestUser() {
-  const timestamp = Date.now();
+  const randomId = Math.random().toString(36).substring(2, 8); // 6-char ID
   return {
-    username: `testuser${timestamp}`,
-    email: `test${timestamp}@example.com`,
+    username: `test${randomId}`,       // total < 15 chars
+    email: `test${randomId}@example.com`,
     password: 'Test123!'
   };
 }
@@ -86,10 +87,10 @@ test.describe('Authentication E2E Tests', () => {
   
   test('User can register and immediately access protected content', async ({ page }) => {
     const user = generateTestUser();
-    await registerUser(page, user.username, user.email, user.password);
+    await registerUser(page, user.username, user.email, user.password, user.password);
     
-    await expect(page).toHaveURL(/dashboard|home/, { timeout: 5000 });
-    await expect(page.locator('text=/logged in|welcome/i')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Clemson Campus Events/i })).toBeVisible();
+    await expect(page.locator(`text=Logged in as ${user.username}`)).toBeVisible();
     
     await page.goto('http://localhost:3000/events');
     await expect(page).not.toHaveURL(/login/);
