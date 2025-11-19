@@ -148,7 +148,6 @@ function Chat({ onBookingConfirmed }) {
         headers: { 'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem("token")}`
         },
-        credentials: 'include',
         body: JSON.stringify({
           eventId: pendingBooking.eventId,
           tickets: pendingBooking.tickets

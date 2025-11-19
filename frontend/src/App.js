@@ -38,6 +38,10 @@ function App() {
 const buyTicket = (eventId) => {
   fetch(`http://localhost:6001/api/events/${eventId}/purchase`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    }
   })
     .then((res) => {
       if (!res.ok) throw new Error("Purchase failed");
