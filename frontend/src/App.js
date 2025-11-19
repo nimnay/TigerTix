@@ -76,7 +76,7 @@ function App() {
     setCurrentUser(username);
     setToken(newToken);
     localStorage.setItem("token", newToken);
-    setShowLogin(true);
+    //setShowLogin(true);
   };
 
 

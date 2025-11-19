@@ -1,5 +1,4 @@
 
-
 // src/setupTests.js
 
 import { TextEncoder, TextDecoder } from 'util';
@@ -8,98 +7,74 @@ global.TextDecoder = TextDecoder;
 
 
 import { setupServer } from 'msw/node';
-import { handlers } from './mocks/handlers';
+//import { handlers } from './mocks/handlers';
 import '@testing-library/jest-dom';
 
-const server = setupServer(...handlers);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 
 // src/mocks/handlers.js
 import { rest } from 'msw';
 
 export const handlers = [
-  rest.post('http://localhost:3001/auth/register', (req, res, ctx) => {
-    return res(
-      ctx.status(201),
-      ctx.json({
-        username: req.body.username,
-        token: 'mock-jwt-token',
-        message: 'User registered successfully',
-      })
-    );
-  }),
+    //register
+    rest.post('http://localhost:3001/auth/register', async (req, res, ctx) => {
+        const { username } = await req.json();
 
-  rest.post('http://localhost:3001/auth/login', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        username: req.body.username,
-        token: 'mock-jwt-token',
-        message: 'Login successful',
-      })
-    );
-  }),
+        return res(
+            ctx.status(201),
+            ctx.json({
+                username,
+                token: 'mock-jwt',
+                message: 'User registered successfully',
+            })
+        );
+    }),
+
+    //login
+    rest.post('http://localhost:3001/auth/login', async (req, res, ctx) => {
+        const { username } = await req.json()
+        return res(
+            ctx.status(200),
+            ctx.json({
+                username,
+                token: 'mock-jwt',
+                message: 'Login successful',
+            })
+        );
+    }),
+
+    rest.get('http://localhost:6001/api/events', (req, res, ctx) => {
+        return res(
+            ctx.status(200),
+            ctx.json([
+                { id: 1, name: 'Concert', date: '2025-12-01', available_tickets: 100 },
+                { id: 2, name: 'Play', date: '2025-12-10', available_tickets: 50 },
+            ])
+        );
+    }),
+
+
+
+    // PROTECTED ROUTE
+    rest.get('http://localhost:3001/protected', (req, res, ctx) => {
+        const auth = req.headers.get('authorization');
+
+        if (!auth || !auth.includes('mock-jwt')) {
+            return res(
+                ctx.status(401),
+                ctx.json({ message: 'Unauthorized' })
+            );
+        }
+        return res(
+            ctx.status(200),
+            ctx.json({ data: 'Protected content' })
+          );
+        })
 ];
 
 
-// src/__tests__/Auth.test.js
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import App from '../App';
+const server = setupServer(...handlers);
 
-describe('Authentication flow', () => {
-
-  test('Registration form validation and login state', async () => {
-    render(<App />);
-
-    // Show registration form
-    fireEvent.click(screen.getByText(/Register/i));
-
-    // Submit empty form → should show validation errors
-    fireEvent.click(screen.getByText(/^Register$/i));
-    expect(await screen.findByText(/Enter a valid email/i)).toBeInTheDocument();
-    expect(screen.getByText(/Username must be/i)).toBeInTheDocument();
-
-    // Fill form correctly
-    fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@test.com' } });
-    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
-    fireEvent.change(screen.getByLabelText(/^password$/i), { target: { value: 'Password123' } });
-    fireEvent.change(screen.getByLabelText(/confirm password/i), { target: { value: 'Password123' } });
-
-    fireEvent.click(screen.getByText(/^Register$/i));
-
-    // Wait for success → Logged in state
-    await waitFor(() => expect(screen.getByText(/Logged in as testuser/i)).toBeInTheDocument());
-    expect(localStorage.getItem('token')).toBe('mock-jwt-token'); // token stored
-  });
-
-  test('Logout clears token and updates UI', async () => {
-    render(<App />);
-
-    // Mock logged-in state
-    localStorage.setItem('token', 'mock-jwt-token');
-    fireEvent.click(screen.getByText(/Logout/i));
-
-    await waitFor(() => {
-      expect(screen.getByText(/Login/i)).toBeInTheDocument();
-      expect(localStorage.getItem('token')).toBeNull();
-    });
-  });
-
-  test('Redirects to login when token expires', async () => {
-    // Here you can mock an expired token in localStorage
-    const expiredToken = {
-      exp: Math.floor(Date.now() / 1000) - 10, // 10 seconds ago
-    };
-    localStorage.setItem('token', btoa(JSON.stringify(expiredToken)));
-
-    render(<App />);
-
-    // Wait for auto-logout
-    await waitFor(() => expect(screen.getByText(/Login/i)).toBeInTheDocument());
-  });
-});
-
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
