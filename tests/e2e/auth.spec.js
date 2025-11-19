@@ -137,4 +137,35 @@ test.describe('Authentication E2E Tests', () => {
     await expect(page.locator('text=/invalid credentials/i')).toBeVisible({ timeout: 3000 });
     await expect(page).toHaveURL(/login/);
   });
+
+  test('User can book an event sucessfully after logging in', async ({ page }) => {
+    const user = await createAndLogin(page);
+    
+    //await page.goto('http://localhost:3000/events');
+    await expect(page.locator('h1')).toHaveText(/Clemson Campus Events/i);
+    // first find the 'Upcoming Events' title to ensure events are loaded
+    await expect(page.locator('text=Upcoming Events')).toBeVisible();
+
+      // Capture initial ticket count for first event
+    const ticketCountLocator = page.locator('text=/Tickets Available:/ >> nth=0');
+    const initialCountText = await ticketCountLocator.innerText();
+    const initialCount = parseInt(initialCountText, 10);
+
+    // Now click the Buy Ticket button for the first event, purple text box
+    await page.click('text=Buy Ticket >> nth=0');
+
+    // Ok so our frontend currently doesn't send a confirmation to the screen, only an updated ticket count is displayed
+    // We could just take the number from tickets available and check it decreased by 1
+      // Capture initial ticket count for first event
+    await page.waitForTimeout(500)
+     
+    const updatedCountText = await ticketCountLocator.innerText();
+    const updatedCount = parseInt(updatedCountText, 10);
+    
+    // Verify ticket count decreased by 1
+    expect(updatedCount).toBe(initialCount - 1);
+
+  }
+  );
+
 });
