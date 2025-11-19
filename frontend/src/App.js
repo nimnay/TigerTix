@@ -9,6 +9,8 @@ import Chat from './components/Chat';
 import './styles/App.css';
 import RegistrationForm from "./components/Registration";
 import LoginForm from "./components/LoginForm";
+import {jwtDecode} from 'jwt-decode';
+
 
 
 
@@ -19,10 +21,11 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [showLogin, setShowLogin] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
 
 
 
-  
+
   
   //function that shows events
   const fetchEvents = () => {
@@ -35,6 +38,48 @@ function App() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+
+
+  useEffect(() => {
+    if (!token) return;
+  
+    try {
+      const decoded = jwtDecode(token);
+      const now = Date.now() / 1000; // seconds
+  
+      if (decoded.exp < now) {
+        handleLogout(); // token already expired
+      } else {
+        // Schedule logout for when token actually expires
+        const timeout = (decoded.exp - now) * 1000; // milliseconds
+        const timer = setTimeout(handleLogout, timeout);
+        return () => clearTimeout(timer);
+      }
+    } catch (err) {
+      console.error("Invalid token:", err);
+      handleLogout();
+    }
+  }, [token]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setLoggedIn(false);
+    setCurrentUser(null);
+    setShowLogin(true);
+    setMessage("Session expired. Please log in again.");
+  };
+
+  const handleLoginSuccess = (username, newToken) => {
+    setLoggedIn(true);
+    setCurrentUser(username);
+    setToken(newToken);
+    localStorage.setItem("token", newToken);
+    setShowLogin(true);
+  };
+
+
 
 const buyTicket = (eventId) => {
   const currentToken = localStorage.getItem("token");
@@ -73,14 +118,7 @@ return (
     {loggedIn && currentUser && (
       <div className="logged-in-banner">
         Logged in as <strong>{currentUser}</strong>
-        <button onClick={() => {
-          localStorage.removeItem("token");
-          setLoggedIn(false);   
-          setCurrentUser(null); 
-          setShowLogin(true);  
-        }}>
-          Logout
-        </button>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     )}
 
@@ -90,11 +128,7 @@ return (
           <div>
       
             <LoginForm 
-              onSuccess={(username) => {
-                setLoggedIn(true);
-                setCurrentUser(username);
-              }}
-            />
+              onSuccess={handleLoginSuccess}/>
             <p>
               Don't have an account?{' '}
               <button onClick={() => setShowLogin(false)}>Register</button>
@@ -103,20 +137,16 @@ return (
         ) : (
          <div>
             <RegistrationForm 
-              onSuccess={(username) => {
-              setLoggedIn(true)
-              setCurrentUser(username);
-            }}
-          />
-        <p>
-          Already have an account?{' '}
-          <button onClick={() => setShowLogin(true)}>Login</button>
+              onSuccess={handleLoginSuccess}/>
+            <p>
+            Already have an account?{' '}
+            <button onClick={() => setShowLogin(true)}>Login</button>
         </p>
       </div>
     )}
-  </div>
-) : (
-      <>
+</div>
+):(
+  <>
       <Chat onBookingConfirmed={fetchEvents} />
    
       <section aria-labelledby="Event-List">
