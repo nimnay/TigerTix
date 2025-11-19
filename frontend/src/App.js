@@ -21,6 +21,7 @@ function App() {
   const [showLogin, setShowLogin] = useState(true);
 
 
+
   
   
   //function that shows events
@@ -36,11 +37,13 @@ function App() {
   }, []);
 
 const buyTicket = (eventId) => {
+  const currentToken = localStorage.getItem("token");
+
   fetch(`http://localhost:6001/api/events/${eventId}/purchase`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      Authorization: `Bearer ${currentToken}`,
     }
   })
     .then((res) => {
@@ -84,7 +87,7 @@ return (
     {!loggedIn ? (
       <div>
         {showLogin ? (
-          <div> }
+          <div>
       
             <LoginForm 
               onSuccess={(username) => {
