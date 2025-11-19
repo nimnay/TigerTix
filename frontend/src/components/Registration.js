@@ -71,7 +71,7 @@ export default function RegistrationForm({onSuccess, apiBase = ""}) {
             }
 
             if (typeof onSuccess === "function") {
-                onSuccess(username);
+                onSuccess(data.username || username, data.token);
             }
 
             setMessage({ type: "success", text: data.message || "Registered successfully." });

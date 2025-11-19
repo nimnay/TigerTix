@@ -40,8 +40,16 @@ async function register(req, res) {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        await createUser(username, hashedPassword, email);
-        res.status(201).json({ message: 'User registered successfully' });
+        const newUser = await createUser(username, hashedPassword, email);
+        
+        // Auto-login: Generate token for the newly registered user
+        const token = jwt.sign({ userId: newUser.id, username: newUser.username }, JWT_SECRET, { expiresIn: '30m' });
+        
+        res.status(201).json({ 
+            message: 'User registered successfully',
+            token,
+            username: newUser.username
+        });
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ message: 'Internal server error' });

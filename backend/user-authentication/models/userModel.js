@@ -11,10 +11,12 @@ async function getDB() {
 
 async function createUser(username, passwordHash, email) {
     const db = await getDB();
-    await db.run(
+    const result = await db.run(
         'INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)',
         [username, passwordHash, email]
     );
+    // Return the newly created user
+    return db.get('SELECT id, username, email FROM users WHERE id = ?', [result.lastID]);
 }
 
 async function getUserByUsername(username) {
