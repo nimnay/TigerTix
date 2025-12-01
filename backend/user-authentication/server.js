@@ -6,7 +6,7 @@ const authRouter = require('./routers/authRouter');
 const app = express();
 
 // CORS MUST be added 
-aapp.use(cors({
+app.use(cors({
   origin: [
     'http://localhost:3000',
     'https://ticketsystem.vercel.app',
