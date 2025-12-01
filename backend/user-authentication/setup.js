@@ -9,7 +9,7 @@ const sqlite3 = require('sqlite3').verbose();
 
 // Path to the init.sql script and the database file
 const initSqlPath = path.resolve(__dirname, 'init.sql');
-const dbPath = path.resolve(__dirname, 'auth.sqlite');
+const dbPath = path.resolve(__dirname, 'data.sqlite');
 
 async function setup() {
   return new Promise((resolve, reject) => {

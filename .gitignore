@@ -35,10 +35,10 @@ node_modules/
 .env.local
 .env.production
 
-# Database files
-*.db
-*.sqlite
-*.sqlite3
+# Database files are INCLUDED per Sprint 4 requirements
+# *.db
+# *.sqlite
+# *.sqlite3
 
 # Logs
 *.log
