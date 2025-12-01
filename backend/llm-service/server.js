@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 7001;
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://ticketsystem.vercel.app',
+    'https://tiger-tix-omega.vercel.app/',
     'https://*.vercel.app'
   ],
   credentials: true
