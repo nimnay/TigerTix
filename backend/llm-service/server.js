@@ -11,7 +11,14 @@ const app = express();
 const PORT = process.env.PORT || 7001;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://ticketsystem.vercel.app',
+    'https://*.vercel.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 

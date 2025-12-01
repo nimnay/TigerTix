@@ -12,6 +12,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 
 // Middleware to parse JSON bodies and cookies
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://ticketsystem.vercel.app',
+    'https://*.vercel.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use('/api/admin', adminRoutes);

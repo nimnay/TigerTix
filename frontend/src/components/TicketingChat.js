@@ -5,6 +5,7 @@
  * Handles user messages, booking confirmations, and displays chat history
  */
 import React, { useState } from "react";
+import API_CONFIG from '../config';
 
 /**
  * TicketingChat component
@@ -27,7 +28,7 @@ export default function TicketingChat({ onBookingConfirmed }) {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:7001/api/llm/parse", {
+      const res = await fetch(`${API_CONFIG.LLM_SERVICE}/api/llm/parse`, {
         method: "POST",
         headers: { "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("token")}` },
@@ -60,7 +61,7 @@ const confirmBooking = async () => {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:7001/api/llm/confirm", {
+      const res = await fetch(`${API_CONFIG.LLM_SERVICE}/api/llm/confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json", 
         "Authorization": `Bearer ${localStorage.getItem("token")}`},

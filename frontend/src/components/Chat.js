@@ -6,6 +6,7 @@
  */
 import React, { useState, useEffect, useCallback } from "react";
 import "../styles/Chat.css";
+import API_CONFIG from '../config';
 
 /**
  * Chat component with voice recognition and text-to-speech
@@ -99,7 +100,7 @@ function Chat({ onBookingConfirmed }) {
 
     try {
       // Send to LLM service
-      const response = await fetch('http://localhost:7001/api/llm/parse', {
+      const response = await fetch(`${API_CONFIG.LLM_SERVICE}/api/llm/parse`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem("token")}`
@@ -143,7 +144,7 @@ function Chat({ onBookingConfirmed }) {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:7001/api/llm/confirm', {
+      const response = await fetch(`${API_CONFIG.LLM_SERVICE}/api/llm/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem("token")}`

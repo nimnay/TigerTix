@@ -17,6 +17,6 @@ test("renders page title", () => {
 // Test 2: Renders welcome message
 test("renders welcome message", () => {
   render(<App />);
-  const welcome = screen.getByText(/Welcome to TigerTix!/i);
+  const welcome = screen.getByText(/Clemson Campus Events/i);
   expect(welcome).toBeInTheDocument();
 });

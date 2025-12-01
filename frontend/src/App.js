@@ -10,6 +10,7 @@ import './styles/App.css';
 import RegistrationForm from "./components/Registration";
 import LoginForm from "./components/LoginForm";
 import {jwtDecode} from 'jwt-decode';
+import API_CONFIG from './config';
 
 
 
@@ -29,7 +30,7 @@ function App() {
   
   //function that shows events
   const fetchEvents = () => {
-    fetch('http://localhost:6001/api/events')
+    fetch(`${API_CONFIG.CLIENT_SERVICE}/api/events`)
       .then((res) => res.json())
       .then((data) => setEvents(data))
       .catch((err) => console.error(err));
@@ -84,7 +85,7 @@ function App() {
 const buyTicket = (eventId) => {
   const currentToken = localStorage.getItem("token");
 
-  fetch(`http://localhost:6001/api/events/${eventId}/purchase`, {
+  fetch(`${API_CONFIG.CLIENT_SERVICE}/api/events/${eventId}/purchase`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

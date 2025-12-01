@@ -9,7 +9,14 @@ const routes = require('./routes/clientRoutes');
 require('./setup');
 
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://ticketsystem.vercel.app',
+    'https://*.vercel.app'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 

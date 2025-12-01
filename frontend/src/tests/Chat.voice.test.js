@@ -134,7 +134,7 @@ describe('Chat Voice Interface Tests', () => {
     test('should update input text with voice transcript', async () => {
       render(<Chat />);
       const micButton = screen.getByLabelText(/voice input/i);
-      const input = screen.getByPlaceholderText(/type or speak/i);
+      const input = screen.getByPlaceholderText(/Message TigerTix/i);
       
       fireEvent.click(micButton);
       
@@ -232,7 +232,7 @@ describe('Chat Voice Interface Tests', () => {
       );
 
       render(<Chat />);
-      const input = screen.getByPlaceholderText(/type or speak/i);
+      const input = screen.getByPlaceholderText(/Message TigerTix/i);
       const sendButton = screen.getByLabelText(/send message/i);
       
       await userEvent.type(input, 'Hello');
@@ -255,7 +255,7 @@ describe('Chat Voice Interface Tests', () => {
       );
 
       render(<Chat />);
-      const input = screen.getByPlaceholderText(/type or speak/i);
+      const input = screen.getByPlaceholderText(/Message TigerTix/i);
       const sendButton = screen.getByLabelText(/send message/i);
       
       await userEvent.type(input, 'Test');
@@ -280,7 +280,7 @@ describe('Chat Voice Interface Tests', () => {
       );
 
       render(<Chat />);
-      const input = screen.getByPlaceholderText(/type or speak/i);
+      const input = screen.getByPlaceholderText(/Message TigerTix/i);
       const sendButton = screen.getByLabelText(/send message/i);
       
       await userEvent.type(input, 'Message');
@@ -305,7 +305,7 @@ describe('Chat Voice Interface Tests', () => {
         });
 
       render(<Chat />);
-      const input = screen.getByPlaceholderText(/type or speak/i);
+      const input = screen.getByPlaceholderText(/Message TigerTix/i);
       const sendButton = screen.getByLabelText(/send message/i);
       
       await userEvent.type(input, 'Book tickets');
@@ -321,7 +321,7 @@ describe('Chat Voice Interface Tests', () => {
       await waitFor(() => {
         expect(mockSpeak).toHaveBeenCalledWith(
           expect.objectContaining({
-            text: 'Booking confirmed!'
+            text: expect.stringMatching(/ready to book/i)
           })
         );
       });
@@ -338,7 +338,7 @@ describe('Chat Voice Interface Tests', () => {
       );
 
       render(<Chat />);
-      const input = screen.getByPlaceholderText(/type or speak/i);
+      const input = screen.getByPlaceholderText(/Message TigerTix/i);
       const sendButton = screen.getByLabelText(/send message/i);
       
       await userEvent.type(input, 'Hello');
@@ -397,7 +397,7 @@ describe('Chat Voice Interface Tests', () => {
       }));
 
       render(<Chat />);
-      const input = screen.getByPlaceholderText(/type or speak/i);
+      const input = screen.getByPlaceholderText(/Message TigerTix/i);
       const sendButton = screen.getByLabelText(/send message/i);
       
       await userEvent.type(input, 'Test');
@@ -433,7 +433,7 @@ describe('Chat Voice Interface Tests', () => {
       const micButton = screen.getByLabelText(/voice input/i);
       
       // Before listening
-      expect(screen.getByPlaceholderText(/type or speak/i)).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/Message TigerTix/i)).toBeInTheDocument();
       
       // During listening
       fireEvent.click(micButton);

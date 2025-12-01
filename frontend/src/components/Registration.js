@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import "../styles/FormStyles.css";
+import API_CONFIG from '../config';
 
 //for validation
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,7 +56,7 @@ export default function RegistrationForm({onSuccess, apiBase = ""}) {
         
         setSubmitting(true);
         try {
-            const res = await fetch(`http://localhost:3001/auth/register`, {
+            const res = await fetch(`${API_CONFIG.AUTH_SERVICE}/auth/register`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({email, username, password}),

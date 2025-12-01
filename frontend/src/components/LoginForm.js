@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles/FormStyles.css";
+import API_CONFIG from '../config';
 
 
 
@@ -29,7 +30,7 @@ export default function LoginForm({onSuccess, apiBase = "" }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:3001/auth/login`, {
+      const res = await fetch(`${API_CONFIG.AUTH_SERVICE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
