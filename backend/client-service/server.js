@@ -5,8 +5,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
 const routes = require('./routes/clientRoutes');
-// Run setup (creates table if needed)
-require('./setup');
+const setup = require('./setup');
 
 
 app.use(cors({
@@ -26,5 +25,12 @@ app.use('/api', routes);
 //Port for client-service
 const PORT = 6001;
 
-app.listen(PORT, () => console.log(`Client Service running at
-http://localhost:${PORT}`));
+// Initialize database before starting server
+setup()
+  .then(() => {
+    app.listen(PORT, () => console.log(`Client Service running at http://localhost:${PORT}`));
+  })
+  .catch((err) => {
+    console.error('Failed to initialize database:', err);
+    process.exit(1);
+  });

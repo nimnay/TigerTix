@@ -2,6 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors'); 
 const authRouter = require('./routers/authRouter');
+const setup = require('./setup');
 
 const app = express();
 
@@ -20,6 +21,14 @@ app.use(cookieParser());
 
 app.use('/auth', authRouter);
 
-app.listen(3001, () => {
-    console.log('User Authentication Service running on port 3001');
-});
+// Initialize database before starting server
+setup()
+  .then(() => {
+    app.listen(3001, () => {
+      console.log('User Authentication Service running on port 3001');
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to initialize database:', err);
+    process.exit(1);
+  });

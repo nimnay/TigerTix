@@ -1,7 +1,6 @@
 /**
  * setup.js
- * Initializes the shared SQLite database using the init.sql script.
- * Run this script before starting the admin service.
+ * Initializes the user authentication SQLite database.
  * Creates the database file if it doesn't exist and sets up the schema.
  */
 const fs = require('fs');
@@ -9,8 +8,8 @@ const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 
 // Path to the init.sql script and the database file
-const initSqlPath = path.resolve(__dirname, '../shared-db/init.sql');
-const dbPath = path.resolve(__dirname, '../shared-db/database.sqlite');
+const initSqlPath = path.resolve(__dirname, 'init.sql');
+const dbPath = path.resolve(__dirname, 'auth.sqlite');
 
 async function setup() {
   return new Promise((resolve, reject) => {
@@ -27,7 +26,7 @@ async function setup() {
     // Open (or create) the SQLite database
     const db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
-        console.error('Failed to open DB:', err.message);
+        console.error('Failed to open auth DB:', err.message);
         return reject(err);
       }
     });
@@ -37,11 +36,11 @@ async function setup() {
      */
     db.exec(initSql, (err) => {
       if (err) {
-        console.error('Error initializing DB:', err.message);
+        console.error('Error initializing auth DB:', err.message);
         db.close();
         return reject(err);
       }
-      console.log('✓ Shared database initialized successfully!');
+      console.log('✓ User authentication database initialized successfully!');
       db.close((closeErr) => {
         if (closeErr) reject(closeErr);
         else resolve();

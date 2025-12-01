@@ -6,6 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const llmRoutes = require('./routes/llmRoutes');
+const setup = require('./setup');
 
 const app = express();
 const PORT = process.env.PORT || 7001;
@@ -36,13 +37,19 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-
-
 // Only start server if not in test mode
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`LLM Service running on port ${PORT}`);
-  });
+  // Initialize database before starting server
+  setup()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`LLM Service running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('Failed to initialize database:', err);
+      process.exit(1);
+    });
 }
 
 module.exports = app;

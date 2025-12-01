@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const router = express.Router();
 const cors = require('cors');
 const adminRoutes = require('./routes/adminRoutes');
+const setup = require('./setup');
 
 const app = express();
 
@@ -28,8 +29,15 @@ app.use('/api/admin', adminRoutes);
 // Health check endpoint
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
-// Start the server
+// Initialize database before starting server
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-    console.log(`Admin service running on port ${PORT}`);
-});
+setup()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Admin service running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to initialize database:', err);
+    process.exit(1);
+  });

@@ -1,53 +1,62 @@
-const axios = require('axios');
+/**
+ * setup.js
+ * Initializes the shared SQLite database for the LLM service.
+ * Creates the database file if it doesn't exist and sets up the schema.
+ */
+const fs = require('fs');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
 
-const LLM_SERVICE_URL = 'http://localhost:7001';
+// Path to the init.sql script and the database file
+const initSqlPath = path.resolve(__dirname, '../shared-db/init.sql');
+const dbPath = path.resolve(__dirname, '../shared-db/database.sqlite');
 
-async function testLLMService() {
-  console.log('Testing LLM Service...\n');
+async function setup() {
+  return new Promise((resolve, reject) => {
+    let initSql;
 
-  try {
-    // Test 1: Greeting
-    console.log('Test 1: Greeting');
-    const greeting = await axios.post(`${LLM_SERVICE_URL}/api/llm/parse`, {
-      text: 'Hello!'
-    });
-    console.log('Response:', greeting.data);
-    console.log('---\n');
-
-    // Test 2: View events
-    console.log('Test 2: View Events');
-    const viewEvents = await axios.post(`${LLM_SERVICE_URL}/api/llm/parse`, {
-      text: 'Show me available events'
-    });
-    console.log('Response:', viewEvents.data);
-    console.log('---\n');
-
-    // Test 3: Book tickets
-    console.log('Test 3: Book Tickets');
-    const booking = await axios.post(`${LLM_SERVICE_URL}/api/llm/parse`, {
-      text: 'Book 2 tickets for Jazz Night'
-    });
-    console.log('Response:', booking.data);
-    
-    if (booking.data.booking) {
-      // Test 4: Confirm booking
-      console.log('\nTest 4: Confirm Booking');
-      const confirm = await axios.post(`${LLM_SERVICE_URL}/api/llm/confirm`, {
-        eventId: booking.data.booking.eventId,
-        tickets: booking.data.booking.tickets
-      });
-      console.log('Response:', confirm.data);
+    try {
+      initSql = fs.readFileSync(initSqlPath, 'utf8');
+    } catch (e) {
+      console.error('Cannot read init.sql:', e.message);
+      console.error('Expected at:', initSqlPath);
+      return reject(e);
     }
-    console.log('---\n');
 
-    console.log('All tests completed!');
-  } catch (error) {
-    console.error('Test failed:', error.response?.data || error.message);
-  }
+    // Open (or create) the SQLite database
+    const db = new sqlite3.Database(dbPath, (err) => {
+      if (err) {
+        console.error('Failed to open DB:', err.message);
+        return reject(err);
+      }
+    });
+
+    /**
+     * Executes the SQL commands from init.sql to set up the database schema.
+     */
+    db.exec(initSql, (err) => {
+      if (err) {
+        console.error('Error initializing DB:', err.message);
+        db.close();
+        return reject(err);
+      }
+      console.log('✓ Shared database initialized successfully!');
+      db.close((closeErr) => {
+        if (closeErr) reject(closeErr);
+        else resolve();
+      });
+    });
+  });
 }
 
+// Allow running directly or as a module
 if (require.main === module) {
-  testLLMService();
+  setup()
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('Setup failed:', err);
+      process.exit(1);
+    });
 }
 
-module.exports = { testLLMService };
+module.exports = setup;
