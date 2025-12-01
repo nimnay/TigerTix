@@ -7,6 +7,7 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const router = express.Router();
+const cors = require('cors');
 const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
