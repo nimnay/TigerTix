@@ -7,8 +7,9 @@ const request = require('supertest');
 const app = require('../../server');
 const jwt = require('jsonwebtoken');
 
-// Generate a test JWT token
-const testToken = jwt.sign({ userId: 1 }, 'secretkey', { expiresIn: '30m' });
+// Generate a test JWT token using the same secret as the middleware
+const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
+const testToken = jwt.sign({ userId: 1 }, JWT_SECRET, { expiresIn: '30m' });
 
 describe('Database Concurrency Tests', () => {
   test('should handle concurrent booking requests', async () => {
