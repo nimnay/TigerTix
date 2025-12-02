@@ -21,6 +21,10 @@ jobs:
           node-version: "18"
           cache: "npm"
 
+      # Install Root Dependencies (for Playwright)
+      - name: Install root dependencies
+        run: npm ci
+
       # Install Frontend Dependencies
       - name: Install frontend dependencies
         run: |
