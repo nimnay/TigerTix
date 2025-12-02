@@ -180,23 +180,27 @@ test.describe("Authentication E2E Tests", () => {
       timeout: 10000,
     });
 
+
+    // Get the first event's ticket count before booking
+    const firstEventText = await page.locator('li').first().textContent();
+    const ticketMatch = firstEventText.match(/Tickets Available:\s*(\d+)/);
+    expect(ticketMatch).not.toBeNull();
+    const initialTicketCount = parseInt(ticketMatch[1], 10);
+    expect(initialTicketCount).toBeGreaterThan(0);
+
+
     // Find the first Buy Ticket button and click it
     const buyButton = page.locator('button:has-text("Buy Ticket")').first();
     await buyButton.click();
     await page.waitForTimeout(1500);
 
-    // Check for success message
-    const successMessage = page.locator("text=/purchased|success/i");
-    const hasMessage = await successMessage.isVisible().catch(() => false);
+    // Verify ticket count decreased by 1
+    const updatedEventText = await page.locator('li').first().textContent();
+    const updatedTicketMatch = updatedEventText.match(/Tickets Available:\s*(\d+)/);
+    expect(updatedTicketMatch).not.toBeNull();
+    const updatedTicketCount = parseInt(updatedTicketMatch[1], 10);
+    
+    expect(updatedTicketCount).toBe(initialTicketCount - 1);
 
-    // Verify either success message appears or page still has events (purchase processed)
-    if (hasMessage) {
-      await expect(successMessage).toBeVisible();
-    } else {
-      // If no message, verify we're still on the events page with events loaded
-      await expect(page.locator('button:has-text("Buy Ticket")')).toHaveCount(
-        await page.locator('button:has-text("Buy Ticket")').count()
-      );
-    }
   });
 });
