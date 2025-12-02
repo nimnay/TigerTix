@@ -9,49 +9,66 @@ let backendProcess;
 let frontendProcess;
 
 test.beforeAll(async () => {
-  console.log("Starting backend server...");
-  backendProcess = exec("cd backend && npm start", (error) => {
-    if (error) console.error("Backend error:", error);
-  });
+  // Check if servers are already running (e.g., in CI/CD)
+  let serversAlreadyRunning = false;
+  try {
+    const response = await fetch("http://localhost:3000");
+    serversAlreadyRunning = true;
+    console.log("Servers already running, skipping startup...");
+  } catch (e) {
+    console.log("Servers not detected, starting them...");
+  }
 
-  console.log("Starting frontend server...");
-  frontendProcess = exec("cd frontend && npm start", (error) => {
-    if (error) console.error("Frontend error:", error);
-  });
+  if (!serversAlreadyRunning) {
+    console.log("Starting backend server...");
+    backendProcess = exec("cd backend && npm start", (error) => {
+      if (error) console.error("Backend error:", error);
+    });
 
-  // Wait for servers to be ready
-  console.log("Waiting for servers to start...");
-  await new Promise((resolve) => setTimeout(resolve, 5000)); // Adjust time as needed
+    console.log("Starting frontend server...");
+    frontendProcess = exec("cd frontend && npm start", (error) => {
+      if (error) console.error("Frontend error:", error);
+    });
 
-  // Better: Check if servers are actually responding
-  let retries = 0;
-  while (retries < 30) {
-    try {
-      const response = await fetch("http://localhost:3000");
-      if (response.ok || response.status === 404) break;
-    } catch (e) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      retries++;
+    // Wait for servers to be ready
+    console.log("Waiting for servers to start...");
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    // Check if servers are actually responding
+    let retries = 0;
+    while (retries < 30) {
+      try {
+        const response = await fetch("http://localhost:3000");
+        if (response.ok || response.status === 404) break;
+      } catch (e) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        retries++;
+      }
     }
   }
   console.log("Servers ready!");
 });
 
 test.afterAll(async () => {
-  console.log("Shutting down servers...");
-  if (backendProcess) backendProcess.kill();
-  if (frontendProcess) frontendProcess.kill();
+  // Only kill processes if we started them
+  if (backendProcess || frontendProcess) {
+    console.log("Shutting down servers...");
+    if (backendProcess) backendProcess.kill();
+    if (frontendProcess) frontendProcess.kill();
 
-  // Kill any lingering processes (optional, for cleanup)
-  try {
-    if (process.platform === "win32") {
-      await execAsync("taskkill /F /IM node.exe /T");
-    } else {
-      await execAsync('pkill -f "node.*backend"');
-      await execAsync('pkill -f "node.*frontend"');
+    // Kill any lingering processes (optional, for cleanup)
+    try {
+      if (process.platform === "win32") {
+        await execAsync("taskkill /F /IM node.exe /T");
+      } else {
+        await execAsync('pkill -f "node.*backend"');
+        await execAsync('pkill -f "node.*frontend"');
+      }
+    } catch (e) {
+      // Processes already killed
     }
-  } catch (e) {
-    // Processes already killed
+  } else {
+    console.log("Servers were already running, not shutting them down...");
   }
 });
 
