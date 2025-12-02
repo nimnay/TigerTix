@@ -102,9 +102,18 @@ jobs:
           cd frontend
           npm test -- --coverage --watchAll=false
 
-      # Install Playwright for E2E tests
+      # Cache Playwright browsers
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      # Install Playwright browsers (only Chromium with system deps)
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps chromium
 
       # Start services for E2E tests
       - name: Start backend services
