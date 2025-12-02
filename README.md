@@ -224,3 +224,16 @@ info on how the frontend tests are ran
 
 
 ## Team Members
+Fill in the table with what you think you did the most <br>
+
+Instructor: Julian Brinkley <br>
+TAs: Atik Enam and Colt Doster <br> 
+
+| Name | Role(s) | Responsibilities |
+|------|---------|------------------|
+| Angie Diaz | role | work done |
+| Nimra Nayyar | role | work done |
+| Diana Sanchez | role | work done |
+
+
+
