@@ -169,15 +169,51 @@ jobs:
           vercel build --prod --token=$VERCEL_TOKEN
           vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
-      # Deploy Backend to Render
-      - name: Deploy Backend to Render
+      # Deploy Backend Services to Render
+      - name: Deploy User Authentication Service to Render
         if: success() && github.ref == 'refs/heads/main'
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_USER_AUTH_SERVICE_ID: ${{ secrets.RENDER_USER_AUTH_SERVICE_ID }}
         run: |
           curl -X POST \
-            https://api.render.com/v1/services/$RENDER_SERVICE_ID/deploys \
+            https://api.render.com/v1/services/$RENDER_USER_AUTH_SERVICE_ID/deploys \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": false}'
+
+      - name: Deploy Admin Service to Render
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_ADMIN_SERVICE_ID: ${{ secrets.RENDER_ADMIN_SERVICE_ID }}
+        run: |
+          curl -X POST \
+            https://api.render.com/v1/services/$RENDER_ADMIN_SERVICE_ID/deploys \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": false}'
+
+      - name: Deploy Client Service to Render
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_CLIENT_SERVICE_ID: ${{ secrets.RENDER_CLIENT_SERVICE_ID }}
+        run: |
+          curl -X POST \
+            https://api.render.com/v1/services/$RENDER_CLIENT_SERVICE_ID/deploys \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": false}'
+
+      - name: Deploy LLM Service to Render
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_LLM_SERVICE_ID: ${{ secrets.RENDER_LLM_SERVICE_ID }}
+        run: |
+          curl -X POST \
+            https://api.render.com/v1/services/$RENDER_LLM_SERVICE_ID/deploys \
             -H "Authorization: Bearer $RENDER_API_KEY" \
             -H "Content-Type: application/json" \
             -d '{"clearCache": false}'
@@ -187,5 +223,8 @@ jobs:
         run: |
           echo "✅ All tests passed!"
           echo "🚀 Frontend deployed to Vercel"
-          echo "🚀 Backend deployed to Render"
+          echo "🚀 User Authentication Service deployed to Render"
+          echo "🚀 Admin Service deployed to Render"
+          echo "🚀 Client Service deployed to Render"
+          echo "🚀 LLM Service deployed to Render"
           echo "✨ Deployment complete!"
