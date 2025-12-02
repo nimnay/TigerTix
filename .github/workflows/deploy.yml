@@ -127,14 +127,24 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           cd backend
-          node start-services.js &
-          sleep 10
+          node start-services.js > backend.log 2>&1 &
+          echo "Waiting for backend services to start..."
+          sleep 15
+          cat backend.log
 
       - name: Start frontend
         run: |
           cd frontend
-          npm start &
-          sleep 15
+          npm start > frontend.log 2>&1 &
+          echo "Waiting for frontend to start..."
+          sleep 20
+
+      - name: Verify servers are running
+        run: |
+          echo "Checking if servers are accessible..."
+          timeout 60 bash -c 'until curl -s http://localhost:3000 > /dev/null; do sleep 2; done' || echo "Frontend not ready"
+          timeout 60 bash -c 'until curl -s http://localhost:3001 > /dev/null; do sleep 2; done' || echo "Auth service not ready"
+          echo "Servers should be ready now"
 
       # Run E2E Regression Tests
       - name: Run E2E regression tests
