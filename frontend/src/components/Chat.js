@@ -88,7 +88,7 @@ function Chat({ onBookingConfirmed }) {
   }, []);
 
   // --- Send message to LLM ---
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
 
@@ -136,7 +136,7 @@ function Chat({ onBookingConfirmed }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [inputText, speak]);
 
   // --- Confirm booking ---
   const handleConfirmBooking = async () => {
