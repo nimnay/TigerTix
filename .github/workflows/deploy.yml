@@ -191,8 +191,7 @@ jobs:
         run: |
           npm install -g vercel
           cd frontend
-          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          vercel --prod --token=$VERCEL_TOKEN --yes
+          vercel deploy --prod --token=$VERCEL_TOKEN --yes
 
       # Deploy Backend Services to Render
       - name: Deploy User Authentication Service to Render
