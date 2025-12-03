@@ -234,7 +234,7 @@ TAs: Atik Enam and Colt Doster <br>
 
 | Name | Role(s) | Responsibilities |
 |------|---------|------------------|
-| Angie Diaz | role | work done |
+| Angie Diaz | Scrum Master, QA | Developed Client + LLM Service, Integration Testing and Playwright Testing|
 | Nimra Nayyar | role | work done |
 | Diana Sanchez | role | work done |
 
