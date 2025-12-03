@@ -218,7 +218,81 @@ npm test
 
 
 ### 2. Frontend Tests
-info on how the frontend tests are ran
+The frontend tests cover:
+
+- User authentication flow (register, login, logout)
+- Event listing and display
+- Ticket booking workflow
+- Voice recognition integration
+- Error handling and UI state management
+
+To run frontend tests:
+
+```bash
+cd frontend
+npm test
+```
+
+This will launch the Jest test runner in interactive mode. Press:
+- `a` to run all tests
+- `w` to watch for file changes
+- `q` to quit
+
+To run tests without watch mode (CI/CD):
+
+```bash
+cd frontend
+npm test -- --watchAll=false --coverage
+```
+
+This will generate a coverage report in `frontend/coverage/`
+
+### 3. E2E Tests
+
+End-to-end tests simulate real user workflows using Playwright:
+
+```bash
+# Install Playwright browsers first (one-time setup)
+npx playwright install
+
+# Run E2E tests
+npx playwright test
+
+# Run with UI for debugging
+npx playwright test --ui
+
+# Generate HTML report
+npx playwright show-report
+```
+
+E2E tests cover:
+- Full registration workflow
+- Login and logout
+- Event browsing and ticket purchase
+- Token management and session persistence
+
+### 4. Run All Tests (CI/CD Pipeline)
+
+To run the complete test suite as the GitHub Actions workflow does:
+
+```bash
+# From root directory, install all dependencies
+cd frontend && npm install && cd ../backend && npm install
+cd user-authentication && npm install && cd ../admin-service && npm install
+cd ../client-service && npm install && cd ../llm-service && npm install && cd ../..
+
+# Run all backend unit tests
+cd backend/user-authentication && npm test
+cd ../admin-service && npm test
+cd ../client-service && npm test
+cd ../llm-service && npm test
+
+# Run frontend tests
+cd ../../frontend && npm test -- --watchAll=false
+
+# Run E2E tests
+npx playwright test
+```
 
 
 
@@ -235,7 +309,7 @@ TAs: Atik Enam and Colt Doster <br>
 | Name | Role(s) | Responsibilities |
 |------|---------|------------------|
 | Angie Diaz | Scrum Master, QA | Developed Client + LLM Service, Integration Testing and Playwright Testing|
-| Nimra Nayyar | role | work done |
+| Nimra Nayyar | Software Developer, QA | Developed Admin + User Auth Service, Unit and Integration Testing for Said Services, Integrated Voice to Text, Deployed Frontend + All Microservices |
 | Diana Sanchez | role | work done |
 
 
