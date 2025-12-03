@@ -31,7 +31,7 @@ TigerTix is built using a combination of frontend, backend, database, and AI tec
 ### Frontend
 - **React** - Provides a dynamic, component based user interface
 - **Web Speech API** Enables voice input and text to speech for an accessible and conversational booking experience
-- **CCS Styled Components** Ensures responsive and accessible design
+- **CCS Styled Components** Ensures responsive and accessible design.
 
 ### Backend
 - **Node.JS + Express** - Handles RESTful APIs for each microservice:
