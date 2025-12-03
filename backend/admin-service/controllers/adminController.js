@@ -2,7 +2,6 @@
  * adminController.js
  * Handles incoming requests related to admin operations.
  * Uses adminModel to interact with the database.
- * Creates a new event in the events table.
  */
 const adminModel = require('../models/adminModel');
 
