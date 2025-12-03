@@ -246,10 +246,10 @@ jobs:
       - name: Deployment Success Notification
         if: success() && github.ref == 'refs/heads/main'
         run: |
-          echo "✅ All tests passed!"
-          echo "🚀 Frontend deployed to Vercel"
-          echo "🚀 User Authentication Service deployed to Render"
-          echo "🚀 Admin Service deployed to Render"
-          echo "🚀 Client Service deployed to Render"
-          echo "🚀 LLM Service deployed to Render"
-          echo "✨ Deployment complete!"
+          echo " All tests passed!"
+          echo " Frontend deployed to Vercel"
+          echo " User Authentication Service deployed to Render"
+          echo " Admin Service deployed to Render"
+          echo " Client Service deployed to Render"
+          echo " LLM Service deployed to Render"
+          echo " Deployment complete!"
