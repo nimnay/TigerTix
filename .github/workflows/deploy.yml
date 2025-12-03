@@ -174,13 +174,6 @@ jobs:
             frontend/coverage/
           retention-days: 30
 
-      # Build for deployment
-      - name: Build frontend for production
-        if: github.ref == 'refs/heads/main'
-        run: |
-          cd frontend
-          npm run build
-
       # Deploy Frontend to Vercel
       - name: Deploy to Vercel
         if: success() && github.ref == 'refs/heads/main'
@@ -192,6 +185,7 @@ jobs:
         run: |
           npm install -g vercel
           vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          vercel build --prod --token=$VERCEL_TOKEN
           vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
       # Deploy Backend Services to Render
