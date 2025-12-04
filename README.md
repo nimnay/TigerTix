@@ -26,31 +26,56 @@ The application is intended for:
 
 
 ## Tech Stack
-TigerTix is built using a combination of frontend, backend, database, and AI technology to create a responsive, secure and intelligent ticketing platform.
+TigerTix is built using a combination of frontend, backend, database, and AI technology. The stack emphasizes security, accessibility, and concurrency safe ticket purchasing.
 
 ### Frontend
-- **React** - Provides a dynamic, component based user interface
-- **Web Speech API** Enables voice input and text to speech for an accessible and conversational booking experience
-- **CCS Styled Components** Ensures responsive and accessible design
+- **React**
+   -  Provides a dynamic, component based user interface
+   - Handles conditional rendering based on authentication and ticket availability
+   
+- **Web Speech API** 
+   - Enables speech-to-text for voice controlled booking
+   - Uses text-to-speech to read back confirmations, improving accessibility and UX
+- **CCS Styled Components** 
+   - Responsive layout for desktop users
+   - Accessibility conscious styles (focus indicators, ARIA tags, contract, keyboard navigation)
+<br>
 
 ### Backend
 - **Node.JS + Express** - Handles RESTful APIs for each microservice:
-   - **Auth Service**: Registration, login, and JWT authentication.
-   - **Admin Service**: Event management and validation.
-   - **Client Service**: Event browsing and ticket purchasing.
-   - **LLM Service**: Natural language parsing, confirmation workflows, and database updates.
-
+Each backend subsystem is implememted as its own logical service, simplifying debugging, testing, and scalability
+   - **Auth Service**:
+      - Handles registration, login, and logout
+      - Hashes passwords, issues tokens, and validates protected route access.
+   - **Admin Service**:
+      - Event creation, updating, and validation
+      - Prevents invalid event state (negative ticket stock, missing fields)
+   - **Client Service**: 
+      - Event Discovery and ticket purchasing
+      - Executes concurrency safe SQL transactions to prevent overselling
+      - returns updates stock and purchase confirmations
+   - **LLM Service**: 
+      - Communicates with Gemini API
+      - Processes user messages into structured intents
+      - Enforces human in the loop confirmations vefore committing database writes
+<br>
 ### Database
-- **SQLite** - Shared relational database storing users, events, and ticket availability.
+- **SQLite**
+    - Shared relational database storing users, events, and ticket availability.
    - Serialized transactions prevent race conditions during concerrent ticket purchases.
 
 ### LLM / AI Integration
- - **Gemini 2.5 Flash API** - Interprents natural language booking requests from users
- - **Regex based fallback parser** - Ensures reliable operation even if LLM API is temporarily unavailable
+ - **Gemini 2.5 Flash API** 
+   - Interprents natural language booking requests
+   - Detects user intent (find events, request tickets)
+ - **Regex based fallback parser** 
+   - Ensures reliable operation even if LLM API is temporarily unavailable
 
 ### Security & Authentication
-- **bcyptjs** - Hashes passwords securely before database storage
-- **jsonwebtoekn (JWT)** - Handles token based authentication for secure session management across microservices. 
+- **bcyptjs** 
+   - Hashes passwords securely before database storage
+- **jsonwebtoekn (JWT)** 
+   - Handles token based authentication for secure session management across microservices. 
 
 This stack enables a fully functional, concurrent safe, and accessible ticketing system with integrated voice and natural language interactions
 
@@ -149,8 +174,39 @@ React updates:
 ## Installation & Setup Guide
 
 ### Local Set Up
+1. Clone the Repository
+```
+git clone https://github.com/nimnay/TigerTix.git
+cd TigerTix
+```
 
-# FILL IN LATER
+2. Install dependencies
+### Frontend 
+```
+cd frontend
+npm install
+```
+
+### Backend
+```
+cd ..
+cd backend
+npm install
+
+```
+### Start Backend Services
+```
+cd backend
+npm start
+```
+
+
+### Start Frontend 
+```
+cd frontend
+npm start
+```
+
 
 ## Environment Variables Setup
 # FILL IN LATER
@@ -163,18 +219,17 @@ React updates:
 
 ### LLM Setup Instructions
 
-1. Clone the repository
-2. Navigate to `llm-service` directory
-3. Install dependencies: `npm install`
-4. Create `.env` file from template:
+1. Navigate to `llm-service` directory
+2. Install dependencies: `npm install`
+3. Create `.env` file from template:
 ```bash
    cp .env.example .env
 ```
-5. Add your Gemini API key to `.env`:
+4. Add your Gemini API key to `.env`:
 ```
    GEMINI_API_KEY=your_actual_key_here
 ```
-6. Start the service: `npm start`
+5. Start the service: `npm start`
 
 
 <br>
@@ -211,10 +266,9 @@ from root directory
 ```
 cd backend
 cd <Microservice you'd like to test>
+npm install #for first time only 
 npm test
 ```
-
-
 
 
 ### 2. Frontend Tests
@@ -313,4 +367,5 @@ TAs: Atik Enam and Colt Doster <br>
 | Diana Sanchez | role | work done |
 
 
-
+## License
+This project is licensed under the terms of the MIT license
