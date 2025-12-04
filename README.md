@@ -11,7 +11,6 @@ The application is intended for:
 - **Admins** who manage the event listings and ticket availability
 
 
-
 ## Live Deployment
 
 **Frontend:** https://tiger-tix-omega.vercel.app/
