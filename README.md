@@ -228,7 +228,6 @@ npm start
 5. Start the service: `npm start`
 
 
-<br>
 
 
 ## Running Regression Tests
@@ -329,8 +328,6 @@ cd ../../frontend && npm test -- --watchAll=false
 # Run E2E tests
 npx playwright test
 ```
-
-
 
 
 
