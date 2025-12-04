@@ -36,7 +36,7 @@ TigerTix is built using a combination of frontend, backend, database, and AI tec
 - **Web Speech API** 
    - Enables speech-to-text for voice controlled booking
    - Uses text-to-speech to read back confirmations, improving accessibility and UX
-- **CCS Styled Components** 
+- **CSS Styled Components** 
    - Responsive layout for desktop users
    - Accessibility conscious styles (focus indicators, ARIA tags, contract, keyboard navigation)
 <br>
@@ -57,16 +57,16 @@ Each backend subsystem is implememted as its own logical service, simplifying de
    - **LLM Service**: 
       - Communicates with Gemini API
       - Processes user messages into structured intents
-      - Enforces human in the loop confirmations vefore committing database writes
-<br>
+      - Enforces human in the loop confirmations before committing database writes
+
 ### Database
 - **SQLite**
     - Shared relational database storing users, events, and ticket availability.
-   - Serialized transactions prevent race conditions during concerrent ticket purchases.
+   - Serialized transactions prevent race conditions during concurrent ticket purchases.
 
 ### LLM / AI Integration
  - **Gemini 2.5 Flash API** 
-   - Interprents natural language booking requests
+   - Interprets natural language booking requests
    - Detects user intent (find events, request tickets)
  - **Regex based fallback parser** 
    - Ensures reliable operation even if LLM API is temporarily unavailable
@@ -74,7 +74,7 @@ Each backend subsystem is implememted as its own logical service, simplifying de
 ### Security & Authentication
 - **bcyptjs** 
    - Hashes passwords securely before database storage
-- **jsonwebtoekn (JWT)** 
+- **jsonwebtoken (JWT)** 
    - Handles token based authentication for secure session management across microservices. 
 
 This stack enables a fully functional, concurrent safe, and accessible ticketing system with integrated voice and natural language interactions
@@ -209,15 +209,9 @@ npm start
 
 
 ## Environment Variables Setup
-# FILL IN LATER
 
-<br>
-<br>
-<br>
-<br>
-<br>
 
-### LLM Setup Instructions
+### LLM Env Setup Instructions
 
 1. Navigate to `llm-service` directory
 2. Install dependencies: `npm install`
@@ -233,21 +227,7 @@ npm start
 
 
 <br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+
 
 ## Running Regression Tests
 TigerTix includes automated regression tests for both the frontend and backend. These tests ensure that authentication, API behavior, UI state updates, and event workflows continure to function correctly as the project is changed. 
@@ -364,8 +344,11 @@ TAs: Atik Enam and Colt Doster <br>
 |------|---------|------------------|
 | Angie Diaz | Scrum Master, QA | Developed Client + LLM Service, Integration Testing and Playwright Testing|
 | Nimra Nayyar | Software Developer, QA | Developed Admin + User Auth Service, Unit and Integration Testing for Said Services, Integrated Voice to Text, Deployed Frontend + All Microservices |
-| Diana Sanchez | role | work done |
+| Diana Sanchez | Software Developer, QA | Developed the frontend UI with styles, connected frontend to backend routes |
 
 
 ## License
 This project is licensed under the terms of the MIT license
+
+See the full MIT License in the LICENSE file.
+
