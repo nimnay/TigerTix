@@ -10,6 +10,8 @@ The application is intended for:
 - **General Users** who prefer natural-language or voice interaction
 - **Admins** who manage the event listings and ticket availability
 
+## Demo Video
+Link to demo video: https://drive.google.com/file/d/1QrX7Nd8v-GWypvkg45oDz7kOhT9KWZuL/view?usp=drive_link
 
 
 ## Live Deployment
