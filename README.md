@@ -342,7 +342,7 @@ TAs: Atik Enam and Colt Doster <br>
 
 | Name | Role(s) | Responsibilities |
 |------|---------|------------------|
-| Angie Diaz | Scrum Master, QA | Developed Client + LLM Service, Integration Testing and Playwright Testing|
+| Angie Diaz | Scrum Master, QA | Developed Client + LLM Services, Integration Testing and Playwright Testing, Implemented CI/CD Pipeline|
 | Nimra Nayyar | Software Developer, QA | Developed Admin + User Auth Service, Unit and Integration Testing for Said Services, Integrated Voice to Text, Deployed Frontend + All Microservices |
 | Diana Sanchez | Software Developer, QA | Developed the frontend UI with styles, connected frontend to backend routes |
 
